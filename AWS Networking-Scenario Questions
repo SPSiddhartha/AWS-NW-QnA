@@ -1,0 +1,1599 @@
+नीचे **AWS Networking** पर आधारित **10 Basic, 10 Intermediate और 15 Advanced Interview Questions & Answers** हिंदी में दिए गए हैं। ये DevOps / Cloud / SRE interviews में अक्सर पूछे जाते हैं।
+
+---
+
+# 🔹 AWS Networking Interview Questions (Hindi)
+
+---
+
+# 1️⃣ Basic Level (10 Questions)
+
+### 1. AWS में VPC क्या है?
+
+**Ans:**
+Amazon Virtual Private Cloud (VPC) AWS का एक **logically isolated network** है जहाँ हम अपने resources (EC2, RDS आदि) को deploy करते हैं।
+
+---
+
+### 2. Subnet क्या होता है?
+
+**Ans:**
+Subnet VPC का **छोटा network segment** होता है।
+यह resources को logically divide करने के लिए उपयोग होता है।
+
+Example:
+
+* Public Subnet
+* Private Subnet
+
+---
+
+### 3. Public Subnet क्या है?
+
+**Ans:**
+Public Subnet वह subnet है जिसमें resources को **internet access** मिलता है।
+यह Internet Gateway से जुड़ा होता है।
+
+---
+
+### 4. Private Subnet क्या है?
+
+**Ans:**
+Private Subnet में resources को **direct internet access नहीं मिलता**।
+इसे secure backend services जैसे database के लिए उपयोग करते हैं।
+
+---
+
+### 5. Internet Gateway क्या है?
+
+**Ans:**
+AWS Internet Gateway VPC और Internet के बीच communication enable करता है।
+
+---
+
+### 6. Route Table क्या है?
+
+**Ans:**
+Route Table rules का collection होता है जो बताता है कि **network traffic कहाँ जाना चाहिए**।
+
+Example:
+
+```
+Destination     Target
+0.0.0.0/0       Internet Gateway
+```
+
+---
+
+### 7. NAT Gateway क्या है?
+
+**Ans:**
+AWS NAT Gateway Private subnet के instances को **internet access देता है लेकिन inbound access allow नहीं करता**।
+
+---
+
+### 8. Security Group क्या है?
+
+**Ans:**
+AWS Security Group instance level firewall है जो **inbound और outbound traffic control** करता है।
+
+---
+
+### 9. Network ACL क्या है?
+
+**Ans:**
+AWS Network ACL subnet level firewall है जो traffic को allow या deny करता है।
+
+---
+
+### 10. CIDR Block क्या होता है?
+
+**Ans:**
+CIDR network IP range define करता है।
+
+Example:
+
+```
+10.0.0.0/16
+```
+
+---
+
+# 2️⃣ Intermediate Level (10 Questions)
+
+---
+
+### 1. Security Group और NACL में difference क्या है?
+
+| Feature   | Security Group | NACL         |
+| --------- | -------------- | ------------ |
+| Level     | Instance       | Subnet       |
+| Rule Type | Allow only     | Allow + Deny |
+| Stateful  | Yes            | No           |
+
+---
+
+### 2. VPC Peering क्या है?
+
+**Ans:**
+AWS VPC Peering दो VPC को privately connect करता है जिससे वे private IP से communicate कर सकते हैं।
+
+---
+
+### 3. NAT Gateway vs NAT Instance
+
+| Feature           | NAT Gateway | NAT Instance |
+| ----------------- | ----------- | ------------ |
+| Managed           | Yes         | No           |
+| High Availability | Yes         | Manual       |
+| Performance       | High        | Depends      |
+
+---
+
+### 4. Bastion Host क्या है?
+
+**Ans:**
+Bastion host public subnet में रखा जाता है जिससे **private subnet servers को SSH से access किया जाता है**।
+
+---
+
+### 5. Elastic IP क्या है?
+
+**Ans:**
+AWS Elastic IP static public IP address है जिसे EC2 instance के साथ associate किया जा सकता है।
+
+---
+
+### 6. Load Balancer क्या करता है?
+
+**Ans:**
+Elastic Load Balancing incoming traffic को multiple servers में distribute करता है।
+
+---
+
+### 7. AWS में कौन-कौन से Load Balancer होते हैं?
+
+1. Application Load Balancer (ALB)
+2. Network Load Balancer (NLB)
+3. Gateway Load Balancer
+
+---
+
+### 8. DNS service AWS में कौन देता है?
+
+**Ans:**
+Amazon Route 53 AWS का DNS service है।
+
+---
+
+### 9. Transit Gateway क्या है?
+
+**Ans:**
+AWS Transit Gateway multiple VPC और on-premise networks को connect करने के लिए hub-and-spoke architecture provide करता है।
+
+---
+
+### 10. PrivateLink क्या है?
+
+**Ans:**
+AWS PrivateLink services को **private network के अंदर expose करने की सुविधा देता है बिना public internet के।**
+
+---
+
+# 3️⃣ Advanced Level (15 Questions)
+
+---
+
+### 1. VPC Flow Logs क्या है?
+
+**Ans:**
+AWS VPC Flow Logs network traffic logs capture करता है।
+
+यह logs भेजे जा सकते हैं:
+
+* CloudWatch
+* S3
+
+---
+
+### 2. AWS Direct Connect क्या है?
+
+**Ans:**
+AWS Direct Connect on-premise datacenter को AWS से **dedicated private connection** देता है।
+
+---
+
+### 3. Site-to-Site VPN क्या है?
+
+**Ans:**
+AWS Site-to-Site VPN on-premise network को AWS VPC से encrypted tunnel के जरिए connect करता है।
+
+---
+
+### 4. Client VPN क्या है?
+
+**Ans:**
+AWS Client VPN users को secure remote access देता है।
+
+---
+
+### 5. Hub-and-Spoke Networking क्या है?
+
+**Ans:**
+इस architecture में:
+
+```
+        VPC1
+          |
+VPC2 --- Transit Gateway --- VPC3
+          |
+        VPC4
+```
+
+---
+
+### 6. Cross Region VPC Peering क्या है?
+
+**Ans:**
+दो अलग regions के VPC को connect करने के लिए उपयोग किया जाता है।
+
+---
+
+### 7. AWS Global Accelerator क्या है?
+
+**Ans:**
+AWS Global Accelerator global users के लिए latency कम करता है।
+
+---
+
+### 8. Endpoint क्या होता है?
+
+**Ans:**
+VPC Endpoint AWS services को private network के अंदर access करने देता है।
+
+Types:
+
+1. Interface Endpoint
+2. Gateway Endpoint
+
+---
+
+### 9. Gateway Endpoint किन services के लिए use होता है?
+
+**Ans:**
+
+* Amazon S3
+* Amazon DynamoDB
+
+---
+
+### 10. Interface Endpoint क्या है?
+
+**Ans:**
+यह ENI (Elastic Network Interface) का उपयोग करके private connection बनाता है।
+
+---
+
+### 11. AWS में Hybrid Networking क्या है?
+
+**Ans:**
+जब on-premise infrastructure को AWS cloud से connect किया जाता है।
+
+---
+
+### 12. Jumbo Frames क्या होते हैं?
+
+**Ans:**
+AWS में MTU size **9001 bytes** तक support होता है जिससे network performance improve होती है।
+
+---
+
+### 13. Security Group referencing क्या है?
+
+**Ans:**
+एक security group दूसरे security group को rule में reference कर सकता है।
+
+Example:
+
+```
+Allow port 3306 from SG-Web
+```
+
+---
+
+### 14. AWS Shield क्या है?
+
+**Ans:**
+AWS Shield DDoS protection service है।
+
+---
+
+### 15. AWS WAF क्या है?
+
+**Ans:**
+AWS WAF web applications को malicious traffic से protect करता है।
+
+नीचे **AWS Networking Architecture Diagrams** और **Real DevOps Troubleshooting on AWS Networking** से जुड़े **Interview Questions & Answers** हिंदी में दिए गए हैं। ये DevOps / SRE / Cloud interviews में बहुत पूछे जाते हैं।
+
+---
+
+# 1️⃣ AWS Networking Architecture (Architecture Diagram Based Q&A)
+
+---
+
+# 🔹 Basic Level (10 Questions)
+
+### 1. AWS का basic 3-tier architecture क्या होता है?
+
+**Ans:**
+3-tier architecture में application को तीन layers में divide किया जाता है।
+
+```
+Internet
+   |
+Load Balancer
+   |
+Public Subnet (Web Layer)
+   |
+Private Subnet (App Layer)
+   |
+Private Subnet (Database Layer)
+```
+
+Components:
+
+* Amazon Virtual Private Cloud
+* Elastic Load Balancing
+* Amazon EC2
+* Amazon RDS
+
+---
+
+### 2. Public subnet architecture कैसा होता है?
+
+```
+Internet
+   |
+Internet Gateway
+   |
+Public Subnet
+   |
+EC2 Instance
+```
+
+यह internet-facing applications के लिए उपयोग होता है।
+
+---
+
+### 3. Private subnet architecture क्या है?
+
+```
+Internet
+   |
+NAT Gateway
+   |
+Private Subnet
+   |
+EC2
+```
+
+Private servers internet access कर सकते हैं लेकिन inbound traffic नहीं आता।
+
+---
+
+### 4. Multi-AZ architecture क्या है?
+
+```
+        Load Balancer
+        /          \
+   AZ1                AZ2
+ Public Subnet     Public Subnet
+      |                 |
+   EC2 Server       EC2 Server
+```
+
+High availability के लिए।
+
+---
+
+### 5. Bastion Host architecture क्या है?
+
+```
+Internet
+   |
+Bastion Host
+   |
+Private EC2
+```
+
+Admin SSH access के लिए।
+
+---
+
+### 6. VPC Peering architecture क्या है?
+
+```
+VPC A  <------->  VPC B
+  EC2              EC2
+```
+
+AWS VPC Peering का उपयोग होता है।
+
+---
+
+### 7. Load balancer architecture क्या होता है?
+
+```
+Internet
+   |
+Application Load Balancer
+   |
+EC2  EC2  EC2
+```
+
+---
+
+### 8. Hybrid cloud architecture क्या है?
+
+```
+On-Premise DataCenter
+        |
+      VPN
+        |
+AWS VPC
+```
+
+---
+
+### 9. DNS architecture AWS में कैसे काम करता है?
+
+```
+User
+ |
+DNS Query
+ |
+Route53
+ |
+Load Balancer
+```
+
+Amazon Route 53 उपयोग होता है।
+
+---
+
+### 10. Static website architecture AWS में कैसे बनता है?
+
+```
+User
+ |
+Route53
+ |
+CloudFront
+ |
+S3
+```
+
+Amazon S3 और Amazon CloudFront उपयोग होते हैं।
+
+---
+
+# 🔹 Intermediate Level (10 Questions)
+
+---
+
+### 1. Hub-and-Spoke networking architecture क्या है?
+
+```
+        VPC1
+          |
+VPC2 --- Transit Gateway --- VPC3
+          |
+        VPC4
+```
+
+AWS Transit Gateway से manage किया जाता है।
+
+---
+
+### 2. Microservices architecture networking diagram
+
+```
+Internet
+   |
+API Gateway
+   |
+Load Balancer
+   |
+ECS / Kubernetes
+   |
+Microservices
+```
+
+---
+
+### 3. High availability architecture AWS में कैसे बनाते हैं?
+
+```
+        Route53
+          |
+    Load Balancer
+      /      \
+   AZ1        AZ2
+ EC2         EC2
+```
+
+---
+
+### 4. Secure architecture AWS में कैसे बनाते हैं?
+
+```
+Internet
+   |
+WAF
+   |
+Load Balancer
+   |
+Private Subnet
+```
+
+AWS WAF उपयोग किया जाता है।
+
+---
+
+### 5. DevOps CI/CD architecture networking
+
+```
+Developer
+   |
+Git
+   |
+Jenkins
+   |
+Docker Registry
+   |
+Kubernetes
+```
+
+---
+
+### 6. Global application architecture
+
+```
+Users
+  |
+Global Accelerator
+  |
+Multiple Regions
+```
+
+AWS Global Accelerator उपयोग होता है।
+
+---
+
+### 7. Serverless architecture
+
+```
+User
+ |
+API Gateway
+ |
+Lambda
+ |
+DynamoDB
+```
+
+---
+
+### 8. Data pipeline architecture
+
+```
+Application
+   |
+Kinesis
+   |
+S3
+   |
+Analytics
+```
+
+---
+
+### 9. Private service architecture
+
+```
+Client VPC
+    |
+PrivateLink
+    |
+Service VPC
+```
+
+AWS PrivateLink
+
+---
+
+### 10. Multi-region architecture
+
+```
+Region1 ------ Region2
+   |              |
+ Application   Application
+```
+
+---
+
+# 🔹 Advanced Level (15 Questions)
+
+---
+
+### 1. Enterprise hybrid architecture
+
+```
+On-Prem
+   |
+Direct Connect
+   |
+Transit Gateway
+   |
+Multiple VPC
+```
+
+AWS Direct Connect
+
+---
+
+### 2. Highly secure banking architecture
+
+```
+Internet
+   |
+CloudFront
+   |
+WAF
+   |
+ALB
+   |
+Private Subnet
+```
+
+---
+
+### 3. DR architecture (Disaster Recovery)
+
+```
+Primary Region
+      |
+Replication
+      |
+Secondary Region
+```
+
+---
+
+### 4. Zero trust networking architecture
+
+```
+User
+ |
+Identity Verification
+ |
+Private Network
+```
+
+---
+
+### 5. Kubernetes networking architecture
+
+```
+Internet
+ |
+Ingress
+ |
+Service
+ |
+Pods
+```
+
+---
+
+### 6. Service mesh architecture
+
+```
+Microservice A <-> Sidecar
+Microservice B <-> Sidecar
+```
+
+---
+
+### 7. CDN architecture
+
+```
+User
+ |
+CloudFront Edge
+ |
+Origin Server
+```
+
+---
+
+### 8. Data lake architecture
+
+```
+Sources
+ |
+S3
+ |
+Glue
+ |
+Athena
+```
+
+---
+
+### 9. Multi account networking
+
+```
+Account A
+   |
+Transit Gateway
+   |
+Account B
+```
+
+---
+
+### 10. High performance architecture
+
+```
+Client
+ |
+NLB
+ |
+EC2
+```
+
+---
+
+### 11. Streaming architecture
+
+```
+Producer
+ |
+Kafka
+ |
+Consumers
+```
+
+---
+
+### 12. Monitoring architecture
+
+```
+Application
+ |
+Metrics
+ |
+CloudWatch
+```
+
+---
+
+### 13. Secure API architecture
+
+```
+User
+ |
+API Gateway
+ |
+Lambda
+```
+
+---
+
+### 14. Edge computing architecture
+
+```
+User
+ |
+Edge Location
+ |
+Origin
+```
+
+---
+
+### 15. Data replication architecture
+
+```
+Primary DB
+   |
+Replication
+   |
+Replica DB
+```
+
+---
+
+# 2️⃣ Real DevOps Troubleshooting Questions (AWS Networking)
+
+---
+
+# 🔹 Basic Level (10 Questions)
+
+---
+
+### 1. EC2 instance internet access क्यों नहीं कर रहा?
+
+Possible reasons:
+
+* Internet Gateway attach नहीं है
+* Route table गलत है
+* Security group issue
+
+---
+
+### 2. SSH connection fail क्यों हो रहा है?
+
+Reasons:
+
+* Port 22 blocked
+* Wrong key pair
+* Security group rule missing
+
+---
+
+### 3. Public instance accessible क्यों नहीं है?
+
+Possible issue:
+
+* Elastic IP attach नहीं है
+* Route table incorrect
+
+---
+
+### 4. Load balancer backend servers healthy क्यों नहीं हैं?
+
+* Health check fail
+* Security group block
+
+---
+
+### 5. DNS resolve नहीं हो रहा?
+
+* Route53 record issue
+* Domain propagation
+
+---
+
+### 6. EC2 to RDS connection fail क्यों हो रहा?
+
+* Security group rules
+* Wrong port
+
+---
+
+### 7. Private instance internet access नहीं कर रहा?
+
+* NAT Gateway missing
+
+---
+
+### 8. VPC peering काम क्यों नहीं कर रहा?
+
+* Route table entry missing
+
+---
+
+### 9. Ping fail क्यों हो रहा?
+
+* ICMP blocked
+
+---
+
+### 10. Website slow क्यों है?
+
+* High latency
+* Load balancer issue
+
+---
+
+# 🔹 Intermediate Level (10 Questions)
+
+---
+
+### 1. Cross-VPC communication fail क्यों है?
+
+Possible reasons:
+
+* Peering route missing
+* Security group restriction
+
+---
+
+### 2. NAT Gateway high cost क्यों आ रहा?
+
+Solution:
+
+* NAT instance
+* VPC endpoints
+
+---
+
+### 3. Multi-AZ failover काम नहीं कर रहा?
+
+* Health check misconfiguration
+
+---
+
+### 4. Private service internet exposed क्यों है?
+
+* Security group open
+
+---
+
+### 5. Application timeout क्यों हो रहा?
+
+* Network ACL block
+
+---
+
+### 6. Packet loss क्यों हो रहा?
+
+* MTU mismatch
+
+---
+
+### 7. Load balancer traffic uneven क्यों है?
+
+* Sticky session issue
+
+---
+
+### 8. VPC Flow Logs क्यों use करते हैं?
+
+Debugging network issues.
+
+---
+
+### 9. API latency high क्यों है?
+
+* DNS delay
+* Region distance
+
+---
+
+### 10. Kubernetes service reachable क्यों नहीं है?
+
+* Ingress configuration
+
+---
+
+# 🔹 Advanced Level (15 Questions)
+
+---
+
+### 1. Production application suddenly unreachable क्यों हो गई?
+
+Steps:
+
+1. DNS check
+2. Load balancer check
+3. Security groups
+4. Route tables
+
+---
+
+### 2. Cross region latency high क्यों है?
+
+Use:
+
+* Global accelerator
+* CDN
+
+---
+
+### 3. On-prem to AWS connection fail क्यों है?
+
+Check:
+
+* VPN tunnel
+* BGP routes
+
+---
+
+### 4. Intermittent connection issues क्यों हो रहे?
+
+Possible cause:
+
+* network congestion
+
+---
+
+### 5. High packet drop troubleshooting
+
+Use:
+
+* VPC flow logs
+* CloudWatch metrics
+
+---
+
+### 6. DDoS attack कैसे detect करेंगे?
+
+Use:
+
+* Shield
+* WAF
+
+---
+
+### 7. Kubernetes pods communicate क्यों नहीं कर रहे?
+
+Check:
+
+* CNI plugin
+
+---
+
+### 8. DNS latency troubleshooting
+
+Check:
+
+* Route53 health check
+
+---
+
+### 9. NAT Gateway saturation issue
+
+Solution:
+
+* Multiple NAT gateways
+
+---
+
+### 10. Private service secure access कैसे देंगे?
+
+Use:
+
+* PrivateLink
+
+---
+
+### 11. High TLS handshake latency
+
+Check:
+
+* certificate size
+* CDN usage
+
+---
+
+### 12. Network security audit कैसे करेंगे?
+
+Check:
+
+* Security group rules
+* NACL rules
+
+---
+
+### 13. Cross account networking कैसे manage करेंगे?
+
+Use:
+
+* Transit gateway
+
+---
+
+### 14. Traffic inspection architecture
+
+Use:
+
+* Gateway load balancer
+
+---
+
+### 15. Multi-region failover design
+
+Use:
+
+* Route53 health checks
+
+---
+
+नीचे **AWS Networking पर 40 Scenario-Based Interview Questions (DevOps / SRE Interviews)** दिए गए हैं। ये real production situations पर आधारित होते हैं और MNC interviews में बहुत पूछे जाते हैं।
+
+जहाँ जरूरी है वहाँ AWS services जैसे
+Amazon Virtual Private Cloud,
+Elastic Load Balancing,
+AWS NAT Gateway,
+Amazon Route 53,
+AWS Transit Gateway आदि का उपयोग बताया गया है।
+
+---
+
+# 1️⃣ Basic Scenario Questions (1–15)
+
+### 1. Scenario
+
+आपने EC2 instance launch किया है लेकिन internet access नहीं है।
+
+**क्या check करेंगे?**
+
+**Answer:**
+
+* Internet Gateway attached है या नहीं
+* Route table में `0.0.0.0/0` entry है या नहीं
+* Security Group outbound rule
+* Public IP attached है या नहीं
+
+---
+
+### 2. Scenario
+
+EC2 instance public subnet में है लेकिन browser से open नहीं हो रहा।
+
+**Answer:**
+
+Check करें:
+
+* Security Group inbound port 80 / 443
+* Instance running है या नहीं
+* Elastic IP attached है या नहीं
+
+---
+
+### 3. Scenario
+
+SSH connection fail हो रहा है।
+
+**Answer:**
+
+Check करें:
+
+* Port 22 open
+* Key pair सही है
+* NACL rules
+
+---
+
+### 4. Scenario
+
+Private subnet के servers internet access नहीं कर पा रहे।
+
+**Answer:**
+
+* NAT Gateway missing
+* Route table incorrect
+
+---
+
+### 5. Scenario
+
+Load balancer backend instances unhealthy दिखा रहा है।
+
+**Answer:**
+
+* Health check path incorrect
+* Security group block
+
+---
+
+### 6. Scenario
+
+Website slow load हो रही है।
+
+**Answer:**
+
+* Server overload
+* Region distance
+* CDN missing (CloudFront)
+
+---
+
+### 7. Scenario
+
+DNS resolve नहीं हो रहा।
+
+**Answer:**
+
+* Route53 record check
+* Domain propagation
+
+---
+
+### 8. Scenario
+
+EC2 से database connect नहीं हो रहा।
+
+**Answer:**
+
+* DB port block
+* Security group rule missing
+
+---
+
+### 9. Scenario
+
+VPC peering के बाद भी communication नहीं हो रहा।
+
+**Answer:**
+
+* Route table entry missing
+* Security group issue
+
+---
+
+### 10. Scenario
+
+Ping fail हो रहा है।
+
+**Answer:**
+
+* ICMP blocked
+
+---
+
+### 11. Scenario
+
+Public server internet से accessible नहीं है।
+
+**Answer**
+
+* Internet Gateway missing
+* Security group issue
+
+---
+
+### 12. Scenario
+
+Application timeout हो रहा है।
+
+**Answer**
+
+* Network ACL block
+
+---
+
+### 13. Scenario
+
+Server intermittent unreachable है।
+
+**Answer**
+
+* CPU overload
+* Network congestion
+
+---
+
+### 14. Scenario
+
+Application high latency दे रहा है।
+
+**Answer**
+
+* Region far
+* CDN missing
+
+---
+
+### 15. Scenario
+
+Load balancer traffic distribute नहीं कर रहा।
+
+**Answer**
+
+* Sticky sessions enabled
+
+---
+
+# 2️⃣ Intermediate Scenario Questions (16–30)
+
+---
+
+### 16. Scenario
+
+दो VPC communicate नहीं कर रहे।
+
+**Answer**
+
+Check करें:
+
+* VPC Peering active
+* Route tables updated
+
+---
+
+### 17. Scenario
+
+Private services internet पर expose हो गई हैं।
+
+**Answer**
+
+* Security group open
+* ALB configuration गलत
+
+---
+
+### 18. Scenario
+
+NAT Gateway cost बहुत ज्यादा आ रहा है।
+
+**Answer**
+
+Solutions:
+
+* VPC endpoints
+* NAT instance
+
+---
+
+### 19. Scenario
+
+Multi AZ failover work नहीं कर रहा।
+
+**Answer**
+
+* Load balancer health check incorrect
+
+---
+
+### 20. Scenario
+
+API latency suddenly बढ़ गई।
+
+**Answer**
+
+* DNS delay
+* backend overload
+
+---
+
+### 21. Scenario
+
+Packet loss हो रहा है।
+
+**Answer**
+
+* MTU mismatch
+* Network congestion
+
+---
+
+### 22. Scenario
+
+High traffic spike आ गया।
+
+**Answer**
+
+Use:
+
+* Auto scaling
+* Load balancing
+
+---
+
+### 23. Scenario
+
+Cross region application slow है।
+
+**Answer**
+
+Use:
+
+* CloudFront
+* Global accelerator
+
+---
+
+### 24. Scenario
+
+Application suddenly unreachable हो गया।
+
+**Answer**
+
+Check करें:
+
+* DNS
+* Load balancer
+* EC2
+
+---
+
+### 25. Scenario
+
+Intermittent connectivity issue।
+
+**Answer**
+
+Check:
+
+* VPC flow logs
+
+---
+
+### 26. Scenario
+
+Kubernetes service reachable नहीं है।
+
+**Answer**
+
+* Ingress config
+* Service type
+
+---
+
+### 27. Scenario
+
+Private service secure access चाहिए।
+
+**Answer**
+
+Use:
+
+* PrivateLink
+
+---
+
+### 28. Scenario
+
+Multiple VPC manage करना है।
+
+**Answer**
+
+Use:
+
+* Transit Gateway
+
+---
+
+### 29. Scenario
+
+On premise server AWS connect नहीं हो रहा।
+
+**Answer**
+
+Check:
+
+* VPN tunnel
+
+---
+
+### 30. Scenario
+
+DNS latency high है।
+
+**Answer**
+
+Use:
+
+* Route53 health check
+
+---
+
+# 3️⃣ Advanced Scenario Questions (31–40)
+
+---
+
+### 31. Scenario
+
+Production site suddenly down हो गई।
+
+**Answer troubleshooting steps**
+
+1. DNS check
+2. Load balancer
+3. EC2 instances
+4. Security groups
+
+---
+
+### 32. Scenario
+
+DDoS attack हो रहा है।
+
+**Answer**
+
+Use:
+
+* WAF
+* Shield
+
+---
+
+### 33. Scenario
+
+High TLS handshake latency।
+
+**Answer**
+
+* CloudFront use करें
+
+---
+
+### 34. Scenario
+
+Hybrid network fail हो गया।
+
+**Answer**
+
+Check:
+
+* Direct connect
+
+---
+
+### 35. Scenario
+
+Cross account networking required।
+
+**Answer**
+
+Use:
+
+* Transit Gateway
+
+---
+
+### 36. Scenario
+
+Secure microservices communication चाहिए।
+
+**Answer**
+
+Use:
+
+* Service mesh
+
+---
+
+### 37. Scenario
+
+High packet drop detect हुआ।
+
+**Answer**
+
+Use:
+
+* VPC flow logs
+
+---
+
+### 38. Scenario
+
+Zero trust networking implement करना है।
+
+**Answer**
+
+* Identity based access
+
+---
+
+### 39. Scenario
+
+Traffic inspection architecture चाहिए।
+
+**Answer**
+
+Use:
+
+* Gateway Load Balancer
+
+---
+
+### 40. Scenario
+
+Disaster recovery networking design करना है।
+
+**Answer**
+
+Use:
+
+* Multi region architecture
+* Route53 failover
+
+---
+
+
+
