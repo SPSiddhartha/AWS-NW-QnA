@@ -1,0 +1,542 @@
+Here are **Azure Virtual Network (VNet)** interview and production troubleshooting **Q&A for a DevOps Engineer (6+ years experience)**.
+
+---
+
+# 1️⃣ Azure Virtual Network – 10 Intermediate Q&A
+
+### 1. What is Azure Virtual Network?
+
+**Answer:**
+A **Azure Virtual Network (VNet)** is a logically isolated network in Azure that allows resources like VMs, AKS clusters, and App Services to communicate securely with each other, the internet, and on-premises networks.
+
+---
+
+### 2. What are subnets in Azure VNet?
+
+**Answer:**
+Subnets divide a VNet into smaller address spaces. They help organize resources and apply **Network Security Groups (NSGs)** and routing policies.
+
+Example:
+
+```
+VNet: 10.0.0.0/16
+Subnet1: 10.0.1.0/24
+Subnet2: 10.0.2.0/24
+```
+
+---
+
+### 3. What is VNet Peering?
+
+**Answer:**
+VNet Peering connects two VNets so resources communicate privately using Azure backbone network without using public internet.
+
+Types:
+
+* Regional VNet Peering
+* Global VNet Peering
+
+---
+
+### 4. What is Network Security Group (NSG)?
+
+**Answer:**
+An NSG is a firewall-like security layer that controls inbound and outbound traffic at:
+
+* Subnet level
+* Network Interface level
+
+Example rule:
+
+| Priority | Source   | Port | Action |
+| -------- | -------- | ---- | ------ |
+| 100      | Internet | 22   | Allow  |
+
+---
+
+### 5. What is Azure Private Endpoint?
+
+**Answer:**
+A **Azure Private Endpoint** enables private connectivity from VNet to Azure PaaS services like Storage or SQL using private IP.
+
+---
+
+### 6. What is a Service Endpoint?
+
+**Answer:**
+Service endpoints extend VNet identity to Azure services like **Azure Storage** allowing secure access without public internet.
+
+---
+
+### 7. What is User Defined Routing (UDR)?
+
+**Answer:**
+UDR allows custom routes to control traffic flow.
+
+Example:
+
+```
+Destination: 0.0.0.0/0
+Next Hop: Firewall
+```
+
+Used for:
+
+* Network Virtual Appliances
+* Forced tunneling
+
+---
+
+### 8. What is VNet Gateway?
+
+**Answer:**
+A **Azure VPN Gateway** connects Azure VNet with on-premise networks using VPN.
+
+Types:
+
+* Site-to-Site VPN
+* Point-to-Site VPN
+* VNet-to-VNet VPN
+
+---
+
+### 9. What is Azure Bastion?
+
+**Answer:**
+**Azure Bastion** provides secure RDP/SSH access to VMs via Azure Portal without exposing public IPs.
+
+---
+
+### 10. Difference between Service Endpoint and Private Endpoint?
+
+| Feature           | Service Endpoint | Private Endpoint |
+| ----------------- | ---------------- | ---------------- |
+| IP type           | Public           | Private          |
+| Security          | Moderate         | High             |
+| Network isolation | Limited          | Full             |
+
+---
+
+# 2️⃣ 10 Real DevOps Production Incidents (Azure VNet)
+
+---
+
+### 1. VM Cannot Reach Internet
+
+**Issue**
+
+VM in private subnet cannot access internet.
+
+**Root Cause**
+
+No NAT gateway or outbound route.
+
+**Fix**
+
+```
+Attach NAT Gateway
+OR
+Add route 0.0.0.0/0 -> Internet
+```
+
+---
+
+### 2. AKS Pods Cannot Access Database
+
+**Issue**
+
+Pods cannot connect to Azure SQL.
+
+**Root Cause**
+
+NSG blocking port 1433.
+
+**Fix**
+
+Allow rule:
+
+```
+Source: AKS subnet
+Port: 1433
+Action: Allow
+```
+
+---
+
+### 3. VNet Peering Connection Failed
+
+**Issue**
+
+Two VNets cannot communicate.
+
+**Root Cause**
+
+Peering created only one side.
+
+**Fix**
+
+Create peering both sides.
+
+---
+
+### 4. Private Endpoint Not Resolving
+
+**Issue**
+
+Application cannot resolve private endpoint.
+
+**Root Cause**
+
+DNS configuration missing.
+
+**Fix**
+
+Add private DNS zone.
+
+Example
+
+```
+privatelink.database.windows.net
+```
+
+---
+
+### 5. On-Prem Cannot Reach Azure VM
+
+**Issue**
+
+Site-to-Site VPN connected but traffic fails.
+
+**Root Cause**
+
+Incorrect route table.
+
+**Fix**
+
+Add route in on-prem router.
+
+---
+
+### 6. Application Timeout in Production
+
+**Issue**
+
+Microservices communication failing.
+
+**Root Cause**
+
+Subnet NSG blocking internal ports.
+
+**Fix**
+
+Allow internal subnet communication.
+
+---
+
+### 7. Storage Account Access Denied
+
+**Issue**
+
+Application cannot access storage.
+
+**Root Cause**
+
+Firewall enabled with VNet restrictions.
+
+**Fix**
+
+Add VNet subnet in firewall rules.
+
+---
+
+### 8. Azure Firewall Blocking Traffic
+
+**Issue**
+
+Outbound API calls failing.
+
+**Root Cause**
+
+Firewall rule missing.
+
+**Fix**
+
+Add application rule.
+
+---
+
+### 9. AKS LoadBalancer Not Working
+
+**Issue**
+
+External traffic not reaching service.
+
+**Root Cause**
+
+Subnet delegation missing.
+
+**Fix**
+
+Configure AKS subnet correctly.
+
+---
+
+### 10. VM SSH Not Accessible
+
+**Issue**
+
+DevOps team cannot SSH into VM.
+
+**Root Cause**
+
+Port 22 blocked by NSG.
+
+**Fix**
+
+Add rule:
+
+```
+Priority: 100
+Port: 22
+Source: DevOps IP
+Allow
+```
+
+---
+
+# 3️⃣ 15 Advanced Production Troubleshooting Scenarios
+
+---
+
+# 1. Intermittent Connectivity Between VNets
+
+**Problem**
+
+Applications randomly lose connectivity.
+
+**Root Cause**
+
+Overlapping CIDR ranges.
+
+Example
+
+```
+VNet1: 10.0.0.0/16
+VNet2: 10.0.0.0/16
+```
+
+**Solution**
+
+Change address space.
+
+---
+
+# 2. AKS Node Cannot Pull Container Images
+
+**Problem**
+
+Pods stuck in `ImagePullBackOff`.
+
+**Root Cause**
+
+No route to **Azure Container Registry**
+
+**Fix**
+
+Allow outbound internet or add private endpoint.
+
+---
+
+# 3. Slow Network Latency
+
+**Problem**
+
+Application response slow.
+
+**Root Cause**
+
+Traffic going through on-prem VPN.
+
+**Fix**
+
+Enable VNet peering.
+
+---
+
+# 4. Private Endpoint DNS Conflict
+
+**Problem**
+
+Application connecting to public endpoint.
+
+**Root Cause**
+
+DNS priority misconfigured.
+
+**Fix**
+
+Configure private DNS zone link.
+
+---
+
+# 5. VNet Gateway Throughput Bottleneck
+
+**Problem**
+
+VPN traffic slow.
+
+**Root Cause**
+
+Gateway SKU too small.
+
+Example
+
+```
+Basic -> 100 Mbps
+VpnGw2 -> 1 Gbps
+```
+
+**Fix**
+
+Upgrade gateway SKU.
+
+---
+
+# 6. Pod to Pod Communication Failure (AKS)
+
+**Root Cause**
+
+Incorrect CNI configuration.
+
+**Fix**
+
+Check Azure CNI networking.
+
+---
+
+# 7. Forced Tunneling Blocking Azure Services
+
+**Problem**
+
+VM cannot access Azure APIs.
+
+**Root Cause**
+
+All traffic routed to on-prem firewall.
+
+**Fix**
+
+Add route exception.
+
+---
+
+# 8. Subnet IP Exhaustion
+
+**Problem**
+
+VM deployment failing.
+
+**Error**
+
+```
+Subnet is full
+```
+
+**Fix**
+
+Increase subnet size.
+
+---
+
+# 9. Azure Firewall SNAT Exhaustion
+
+**Problem**
+
+Outbound traffic dropping.
+
+**Root Cause**
+
+Too many connections.
+
+**Fix**
+
+Scale firewall.
+
+---
+
+# 10. VNet Peering DNS Issue
+
+**Problem**
+
+VM resolves incorrect hostname.
+
+**Root Cause**
+
+Custom DNS misconfiguration.
+
+**Fix**
+
+Configure shared DNS server.
+
+---
+
+# 11. Kubernetes Service Not Accessible Internally
+
+**Root Cause**
+
+Incorrect service CIDR.
+
+**Fix**
+
+Reconfigure cluster networking.
+
+---
+
+# 12. Application Cannot Reach Private Storage
+
+**Root Cause**
+
+Private endpoint in different VNet.
+
+**Fix**
+
+Enable VNet peering.
+
+---
+
+# 13. Azure Load Balancer Health Probe Failure
+
+**Root Cause**
+
+NSG blocking probe port.
+
+**Fix**
+
+Allow health probe traffic.
+
+---
+
+# 14. Hybrid Connectivity Packet Drops
+
+**Root Cause**
+
+MTU mismatch.
+
+**Fix**
+
+Adjust MTU.
+
+---
+
+# 15. Cross Region VNet Communication Slow
+
+**Root Cause**
+
+Traffic going over internet.
+
+**Fix**
+
+Use Global VNet Peering.
+
+---
+
