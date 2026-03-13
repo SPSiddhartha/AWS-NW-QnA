@@ -1,0 +1,585 @@
+Below are **Azure ExpressRoute DevOps Interview Q&A** focused on **real production understanding** for a **DevOps Engineer (6+ years experience)**.
+
+---
+
+# 1️⃣ 10 Intermediate Azure ExpressRoute Q&A
+
+### Q1. What is Azure ExpressRoute?
+
+**Answer:**
+Azure ExpressRoute provides a **private, dedicated connection** between an on-premises data center and **Microsoft Azure** without using the public internet. It ensures **low latency, higher security, and predictable performance**.
+
+---
+
+### Q2. What are the connectivity models supported by ExpressRoute?
+
+**Answer:**
+
+1. **CloudExchange Colocation**
+2. **Point-to-Point Ethernet**
+3. **Any-to-Any IPVPN**
+
+These are provided by **Microsoft-approved connectivity providers**.
+
+---
+
+### Q3. What are the different peering types in ExpressRoute?
+
+**Answer**
+
+1. **Private Peering** – For VNet communication
+2. **Microsoft Peering** – For Azure PaaS services
+3. **Public Peering** – Deprecated
+
+---
+
+### Q4. What is ExpressRoute Circuit?
+
+**Answer:**
+An **ExpressRoute Circuit** represents the logical connection between **on-premises network and Azure via connectivity provider**.
+
+It includes:
+
+* Bandwidth (50 Mbps – 100 Gbps)
+* Billing model
+* Peering configuration
+
+---
+
+### Q5. What is ExpressRoute Gateway?
+
+**Answer:**
+An **ExpressRoute Gateway** is deployed in an **Azure VNet** to connect the VNet to an ExpressRoute circuit.
+
+Without the gateway, **VNet cannot communicate with ExpressRoute circuits**.
+
+---
+
+### Q6. What is ExpressRoute FastPath?
+
+**Answer:**
+FastPath allows **traffic to bypass the ExpressRoute Gateway**, reducing latency and improving performance.
+
+Used for **high-performance workloads like SAP, HPC, large databases**.
+
+---
+
+### Q7. What redundancy does ExpressRoute provide?
+
+**Answer:**
+
+ExpressRoute provides **high availability via two connections**:
+
+* Primary connection
+* Secondary connection
+
+Both connections terminate at **Microsoft Edge routers**.
+
+---
+
+### Q8. What is Global Reach in ExpressRoute?
+
+**Answer:**
+**ExpressRoute Global Reach** allows **two on-premises networks connected through different ExpressRoute circuits to communicate via Microsoft backbone network**.
+
+Example:
+
+```
+US Datacenter → Azure Backbone → India Datacenter
+```
+
+---
+
+### Q9. What bandwidth options are available?
+
+**Answer:**
+
+Common bandwidth options:
+
+```
+50 Mbps
+100 Mbps
+200 Mbps
+500 Mbps
+1 Gbps
+2 Gbps
+5 Gbps
+10 Gbps
+100 Gbps
+```
+
+---
+
+### Q10. What is the difference between ExpressRoute and VPN Gateway?
+
+| Feature   | ExpressRoute   | VPN Gateway     |
+| --------- | -------------- | --------------- |
+| Network   | Private        | Public Internet |
+| Latency   | Low            | Higher          |
+| Security  | High           | Medium          |
+| Bandwidth | Up to 100 Gbps | Limited         |
+
+---
+
+# 2️⃣ 10 Real DevOps Production Incidents (Azure ExpressRoute)
+
+---
+
+### Incident 1 — On-Prem Servers Cannot Reach Azure VM
+
+**Problem**
+
+Application servers in the data center cannot reach Azure VMs.
+
+**Root Cause**
+
+BGP route advertisement missing.
+
+**Fix**
+
+Verify BGP routes:
+
+```
+show ip bgp summary
+```
+
+Ensure routes are advertised to Azure.
+
+---
+
+### Incident 2 — VNet Not Receiving ExpressRoute Traffic
+
+**Problem**
+
+Traffic entering Azure but not reaching VNet.
+
+**Root Cause**
+
+ExpressRoute Gateway not configured.
+
+**Fix**
+
+Deploy gateway:
+
+```
+Gateway type: ExpressRoute
+SKU: ErGw2AZ
+```
+
+---
+
+### Incident 3 — Packet Loss Over ExpressRoute
+
+**Problem**
+
+Application latency spikes.
+
+**Root Cause**
+
+Bandwidth saturation.
+
+**Fix**
+
+Monitor metrics:
+
+```
+ExpressRoute circuit utilization
+```
+
+Upgrade circuit bandwidth.
+
+---
+
+### Incident 4 — BGP Session Down
+
+**Problem**
+
+ExpressRoute connection suddenly stopped.
+
+**Root Cause**
+
+ASN mismatch.
+
+**Fix**
+
+Check:
+
+```
+Customer ASN
+Microsoft ASN
+```
+
+Correct ASN configuration.
+
+---
+
+### Incident 5 — Only Some VNets Accessible
+
+**Problem**
+
+Some VNets reachable, others not.
+
+**Root Cause**
+
+VNet not linked to ExpressRoute circuit.
+
+**Fix**
+
+Add VNet connection.
+
+---
+
+### Incident 6 — Microsoft Services Not Accessible
+
+**Problem**
+
+Azure Storage unreachable.
+
+**Root Cause**
+
+Microsoft Peering not configured.
+
+**Fix**
+
+Enable **Microsoft Peering**.
+
+---
+
+### Incident 7 — Traffic Still Going via Internet
+
+**Problem**
+
+Even with ExpressRoute, traffic uses internet.
+
+**Root Cause**
+
+Route preference misconfiguration.
+
+**Fix**
+
+Adjust route preference.
+
+---
+
+### Incident 8 — Slow Database Replication
+
+**Problem**
+
+Replication between on-prem DB and Azure slow.
+
+**Root Cause**
+
+Gateway bottleneck.
+
+**Fix**
+
+Upgrade gateway SKU.
+
+---
+
+### Incident 9 — Azure DevOps Pipeline Cannot Reach On-Prem
+
+**Problem**
+
+Self-hosted agents fail.
+
+**Root Cause**
+
+Firewall blocking ExpressRoute CIDR ranges.
+
+**Fix**
+
+Allow Microsoft advertised prefixes.
+
+---
+
+### Incident 10 — ExpressRoute Circuit Down
+
+**Problem**
+
+Entire connection lost.
+
+**Root Cause**
+
+Provider outage.
+
+**Fix**
+
+Use:
+
+```
+ExpressRoute + VPN failover
+```
+
+---
+
+# 3️⃣ 15 Advanced Production Troubleshooting (DevOps)
+
+---
+
+# 1. ExpressRoute Circuit Shows Provisioned But Traffic Not Flowing
+
+**Problem**
+
+Circuit provisioned but no connectivity.
+
+**Troubleshooting**
+
+Check:
+
+```
+BGP status
+Peering configuration
+Route tables
+```
+
+**Example**
+
+```
+az network express-route list
+```
+
+---
+
+# 2. Azure AKS Cannot Reach On-Prem Services
+
+**Root Cause**
+
+UDR misconfiguration.
+
+**Fix**
+
+Add route:
+
+```
+Destination: onprem CIDR
+Next Hop: ExpressRoute Gateway
+```
+
+---
+
+# 3. ExpressRoute Gateway CPU High
+
+**Symptoms**
+
+High latency.
+
+**Fix**
+
+Upgrade gateway SKU.
+
+Example:
+
+```
+ErGw1AZ → ErGw3AZ
+```
+
+---
+
+# 4. Asymmetric Routing Issue
+
+**Problem**
+
+Traffic goes to Azure via ExpressRoute but returns via Internet.
+
+**Impact**
+
+Connection drops.
+
+**Fix**
+
+Adjust routing preference.
+
+---
+
+# 5. ExpressRoute Circuit Bandwidth Saturation
+
+**Symptoms**
+
+```
+High latency
+Packet drops
+Slow apps
+```
+
+**Fix**
+
+Upgrade circuit bandwidth.
+
+---
+
+# 6. Private Endpoint Not Reachable via ExpressRoute
+
+**Root Cause**
+
+DNS resolution incorrect.
+
+**Fix**
+
+Configure:
+
+```
+Private DNS zone
+Custom DNS forwarder
+```
+
+---
+
+# 7. Microsoft Peering Route Filtering Issue
+
+**Problem**
+
+Some services unreachable.
+
+**Root Cause**
+
+Route filters not configured.
+
+**Fix**
+
+Add route filters.
+
+Example:
+
+```
+Office365
+Azure Storage
+Azure SQL
+```
+
+---
+
+# 8. ExpressRoute Gateway Deployment Failed
+
+**Root Cause**
+
+Subnet misconfiguration.
+
+**Fix**
+
+Ensure subnet name:
+
+```
+GatewaySubnet
+```
+
+Minimum size:
+
+```
+/27 or larger
+```
+
+---
+
+# 9. ExpressRoute Circuit Connected but No VNet Access
+
+**Root Cause**
+
+Authorization key mismatch.
+
+**Fix**
+
+Verify authorization key.
+
+---
+
+# 10. Cross-Region Traffic Slow
+
+**Root Cause**
+
+Circuit located far from region.
+
+**Fix**
+
+Use **Global Reach**.
+
+---
+
+# 11. BGP Flapping
+
+**Problem**
+
+Frequent connection drops.
+
+**Cause**
+
+Provider instability.
+
+**Fix**
+
+Tune BGP timers.
+
+---
+
+# 12. VNet Peering Not Working with ExpressRoute
+
+**Root Cause**
+
+Gateway transit not enabled.
+
+**Fix**
+
+Enable:
+
+```
+Allow Gateway Transit
+Use Remote Gateway
+```
+
+---
+
+# 13. ExpressRoute Failover Not Working
+
+**Root Cause**
+
+VPN fallback not configured.
+
+**Fix**
+
+Configure **Active-Active VPN Gateway**.
+
+---
+
+# 14. Azure Firewall Blocking ExpressRoute Traffic
+
+**Problem**
+
+Traffic drops.
+
+**Fix**
+
+Allow rule:
+
+```
+Source: OnPrem CIDR
+Destination: VNet CIDR
+```
+
+---
+
+# 15. Multi-Region ExpressRoute Architecture Failure
+
+**Solution**
+
+Use:
+
+```
+ExpressRoute Global Reach
+Multiple circuits
+Multiple gateways
+```
+
+Example architecture:
+
+```
+OnPrem
+   |
+ExpressRoute Circuit
+   |
+Azure Hub VNet
+   |
+Spoke VNets
+AKS / VMs / DB
+```
+
+---
