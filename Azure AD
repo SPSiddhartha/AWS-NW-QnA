@@ -1,0 +1,573 @@
+Below are **Azure AD / Microsoft Entra ID (Azure AD)** **DevOps Interview Q&A** categorized for **6+ years experience**.
+
+---
+
+# 1️⃣ Basic Azure AD / Entra ID Interview Q&A (10)
+
+### Q1. What is Azure AD (Microsoft Entra ID)?
+
+**Answer:**
+Microsoft Entra ID (formerly **Azure Active Directory**) is Microsoft's cloud-based **Identity and Access Management (IAM)** service used to authenticate users and authorize access to applications and cloud resources like **Microsoft Azure**, SaaS apps, and internal enterprise applications.
+
+---
+
+### Q2. What are the main components of Azure AD?
+
+**Answer**
+
+1. Users
+2. Groups
+3. Applications
+4. Service Principals
+5. Managed Identities
+6. Roles and Permissions
+7. Conditional Access Policies
+
+---
+
+### Q3. What is a Tenant in Azure AD?
+
+**Answer:**
+A **Tenant** is a **dedicated instance of Azure AD** created when an organization signs up for Azure.
+It stores identity information like **users, apps, groups, and policies**.
+
+Example:
+
+```
+companyname.onmicrosoft.com
+```
+
+---
+
+### Q4. What is the difference between Authentication and Authorization?
+
+| Term           | Meaning                                     |
+| -------------- | ------------------------------------------- |
+| Authentication | Verifying identity (username/password, MFA) |
+| Authorization  | Granting permission to access resources     |
+
+Azure AD performs **both authentication and authorization**.
+
+---
+
+### Q5. What is Single Sign-On (SSO)?
+
+**Answer:**
+SSO allows users to **log in once and access multiple applications without re-authentication**.
+
+Example:
+Login to Azure → Access **Office365, Azure Portal, SaaS apps** without logging in again.
+
+---
+
+### Q6. What is Multi-Factor Authentication (MFA)?
+
+**Answer:**
+MFA requires **multiple verification factors** such as:
+
+* Password
+* OTP
+* Mobile authenticator
+* Biometrics
+
+It improves security against credential theft.
+
+---
+
+### Q7. What are Azure AD Groups?
+
+**Answer:**
+Groups help manage access to resources by assigning **permissions to multiple users at once**.
+
+Types:
+
+* Security groups
+* Microsoft 365 groups
+* Dynamic groups
+
+---
+
+### Q8. What is a Service Principal?
+
+**Answer:**
+A **Service Principal** is an **identity created for applications** to access Azure resources.
+
+Example:
+CI/CD pipeline accessing storage or AKS cluster.
+
+---
+
+### Q9. What is Role-Based Access Control (RBAC)?
+
+**Answer:**
+RBAC restricts access to Azure resources based on **roles assigned to users, groups, or applications**.
+
+Example roles:
+
+* Owner
+* Contributor
+* Reader
+
+---
+
+### Q10. What is Azure AD Connect?
+
+**Answer:**
+Azure AD Connect synchronizes **on-prem Active Directory identities** with **Azure AD**.
+
+Example:
+
+```
+On-prem AD → Azure AD
+```
+
+Used in **Hybrid identity environments**.
+
+---
+
+# 2️⃣ Intermediate Azure AD / Entra ID Q&A (10)
+
+---
+
+### Q11. What is the difference between Azure AD and Active Directory?
+
+| Feature        | Active Directory      | Azure AD          |
+| -------------- | --------------------- | ----------------- |
+| Type           | On-premises           | Cloud             |
+| Protocol       | LDAP/Kerberos         | REST/OAuth        |
+| Usage          | Domain authentication | Cloud identity    |
+| Infrastructure | Domain controllers    | Microsoft managed |
+
+---
+
+### Q12. What are Conditional Access Policies?
+
+**Answer:**
+Policies that control **access based on conditions** like:
+
+* User location
+* Device compliance
+* Risk level
+* MFA requirement
+
+Example:
+
+```
+If login outside company network → Require MFA
+```
+
+---
+
+### Q13. What is Managed Identity?
+
+**Answer:**
+Managed Identity provides **automatic identity management for Azure resources**.
+
+Example:
+
+```
+Azure VM → Access Key Vault
+```
+
+No need to store credentials.
+
+---
+
+### Q14. What are Azure AD Application Registrations?
+
+**Answer:**
+App registration creates an **identity for applications** to integrate with Azure AD authentication.
+
+Example:
+
+```
+Web App → Azure AD login
+```
+
+---
+
+### Q15. What is OAuth in Azure AD?
+
+**Answer:**
+OAuth is an authorization protocol used by Azure AD to allow **secure API access using tokens**.
+
+Flow:
+
+```
+User → Azure AD → Access Token → Application
+```
+
+---
+
+### Q16. What is a Token in Azure AD?
+
+**Answer:**
+A token is a **security credential issued by Azure AD after authentication**.
+
+Types:
+
+* ID Token
+* Access Token
+* Refresh Token
+
+---
+
+### Q17. What is Azure AD Privileged Identity Management (PIM)?
+
+**Answer:**
+PIM provides **just-in-time privileged access** to Azure resources.
+
+Example:
+Admin activates role **only when needed**.
+
+---
+
+### Q18. What are Dynamic Groups?
+
+**Answer:**
+Dynamic groups automatically add users based on attributes.
+
+Example rule:
+
+```
+department = "DevOps"
+```
+
+---
+
+### Q19. What is B2B and B2C in Azure AD?
+
+| Type | Purpose                        |
+| ---- | ------------------------------ |
+| B2B  | External partner collaboration |
+| B2C  | Customer identity management   |
+
+---
+
+### Q20. What is Federation in Azure AD?
+
+**Answer:**
+Federation allows **authentication via external identity providers**.
+
+Example:
+
+```
+Azure AD + ADFS
+```
+
+---
+
+# 3️⃣ Advanced DevOps Production Troubleshooting Scenarios (15)
+
+---
+
+# Scenario 1: AKS Authentication Failure
+
+### Problem
+
+DevOps engineers cannot login to AKS cluster using Azure AD.
+
+### Root Cause
+
+Service principal credentials expired.
+
+### Fix
+
+Rotate credentials.
+
+Example:
+
+```
+az ad sp credential reset --name <app-id>
+```
+
+### Explanation
+
+AKS uses **Azure AD service principal** for authentication.
+
+---
+
+# Scenario 2: Terraform Azure AD Authentication Failure
+
+### Problem
+
+Terraform pipeline fails:
+
+```
+Error: authentication failed
+```
+
+### Root Cause
+
+Service principal lacks RBAC permission.
+
+### Fix
+
+Assign role:
+
+```
+az role assignment create \
+--assignee <sp-id> \
+--role Contributor
+```
+
+---
+
+# Scenario 3: DevOps Pipeline Cannot Access Azure Resources
+
+### Problem
+
+CI/CD pipeline cannot deploy resources.
+
+### Root Cause
+
+Service connection lacks permissions.
+
+### Fix
+
+Grant access using RBAC.
+
+Example:
+
+```
+Contributor role to service principal
+```
+
+---
+
+# Scenario 4: Users Unable to Login Due to Conditional Access
+
+### Problem
+
+Users blocked from login.
+
+### Root Cause
+
+Conditional policy requires compliant device.
+
+### Fix
+
+Modify policy.
+
+Steps:
+
+```
+Azure Portal
+→ Entra ID
+→ Conditional Access
+→ Exclude group
+```
+
+---
+
+# Scenario 5: MFA Loop Issue
+
+### Problem
+
+Users stuck in repeated MFA verification.
+
+### Root Cause
+
+Misconfigured Conditional Access.
+
+### Fix
+
+Reset MFA registration.
+
+```
+Azure Portal
+→ Users
+→ Authentication Methods
+→ Reset MFA
+```
+
+---
+
+# Scenario 6: Token Expiry Causing Application Failure
+
+### Problem
+
+Application fails after token expiry.
+
+### Root Cause
+
+Refresh token not implemented.
+
+### Fix
+
+Enable refresh tokens.
+
+Explanation:
+Apps should implement **OAuth token refresh flow**.
+
+---
+
+# Scenario 7: AKS Pod Cannot Access Key Vault
+
+### Problem
+
+Application fails retrieving secrets.
+
+### Root Cause
+
+Missing Managed Identity permissions.
+
+### Fix
+
+```
+az keyvault set-policy \
+--name kv-prod \
+--object-id <managed-identity> \
+--secret-permissions get
+```
+
+---
+
+# Scenario 8: Unauthorized Access Error
+
+### Problem
+
+Users see:
+
+```
+403 Forbidden
+```
+
+### Root Cause
+
+RBAC role missing.
+
+### Fix
+
+Assign proper role.
+
+---
+
+# Scenario 9: Guest Users Cannot Access Resources
+
+### Problem
+
+B2B users cannot access applications.
+
+### Root Cause
+
+Application access not granted.
+
+### Fix
+
+Add users to security group with access.
+
+---
+
+# Scenario 10: Azure AD Sync Failure
+
+### Problem
+
+On-prem users not syncing.
+
+### Root Cause
+
+Azure AD Connect service stopped.
+
+### Fix
+
+Restart service:
+
+```
+Start-Service ADSync
+```
+
+---
+
+# Scenario 11: DevOps Pipeline Authentication Timeout
+
+### Problem
+
+Pipeline login fails.
+
+### Root Cause
+
+Expired certificate authentication.
+
+### Fix
+
+Renew certificate in app registration.
+
+---
+
+# Scenario 12: API Access Denied
+
+### Problem
+
+Application cannot access Graph API.
+
+### Root Cause
+
+Missing API permissions.
+
+### Fix
+
+```
+App Registration
+→ API Permissions
+→ Grant Admin Consent
+```
+
+---
+
+# Scenario 13: Excessive Privilege Risk
+
+### Problem
+
+Too many users have Owner role.
+
+### Root Cause
+
+Improper access governance.
+
+### Fix
+
+Implement **Privileged Identity Management (PIM)**.
+
+---
+
+# Scenario 14: Conditional Access Blocking Automation
+
+### Problem
+
+Automation scripts fail.
+
+### Root Cause
+
+Conditional policy requiring MFA.
+
+### Fix
+
+Exclude service principals.
+
+---
+
+# Scenario 15: Identity Lockout During Incident
+
+### Problem
+
+Admins locked out of tenant.
+
+### Root Cause
+
+Strict conditional access.
+
+### Fix
+
+Use **Break Glass Emergency Account**.
+
+Explanation:
+Every organization should maintain **2 emergency global admin accounts without MFA policies**.
+
+---
+
+
+* **Azure AD Architecture used in Enterprises**
+* **Azure AD + AKS + DevOps Pipeline Authentication Flow**
+* **Azure AD Security Best Practices for DevOps Engineers**
+
