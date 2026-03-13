@@ -1,0 +1,1058 @@
+Below are **35 Azure Virtual Machine (VM) Interview Questions and Answers** (Basic + Intermediate + Advanced) with **examples and explanations**. These are commonly asked in **DevOps / Cloud / SRE interviews**, especially when working with **Microsoft Azure infrastructure**.
+
+---
+
+# 1️⃣ Basic Azure VM Interview Questions (10)
+
+## 1. What is an Azure Virtual Machine?
+
+**Answer:**
+An **Azure VM** is an Infrastructure-as-a-Service (IaaS) offering that allows you to run applications and workloads on virtualized servers in the cloud.
+
+**Example:**
+Running a **Linux server for a web application**.
+
+```
+User -> Internet -> Azure VM -> Web Application
+```
+
+**Explanation:**
+Instead of buying physical servers, Azure provides scalable VMs hosted in its datacenters.
+
+---
+
+## 2. What are the types of Azure VM disks?
+
+Azure VMs use the following disks:
+
+| Disk Type      | Purpose                            |
+| -------------- | ---------------------------------- |
+| OS Disk        | Contains operating system          |
+| Data Disk      | Stores application data            |
+| Temporary Disk | Temporary storage (non-persistent) |
+
+**Example**
+
+```
+VM
+ ├── OS Disk
+ ├── Data Disk
+ └── Temp Disk
+```
+
+---
+
+## 3. What VM sizes are available in Azure?
+
+VM sizes define:
+
+* CPU
+* RAM
+* Network performance
+* Disk throughput
+
+Examples:
+
+| VM Series | Use Case          |
+| --------- | ----------------- |
+| B-series  | Burst workloads   |
+| D-series  | General purpose   |
+| F-series  | Compute optimized |
+| M-series  | Memory intensive  |
+
+---
+
+## 4. What is the difference between Azure VM and Azure App Service?
+
+| Feature                | Azure VM | Azure App Service |
+| ---------------------- | -------- | ----------------- |
+| Infrastructure Control | Full     | Limited           |
+| OS Access              | Yes      | No                |
+| Maintenance            | User     | Azure             |
+
+**Example**
+
+Use **VM** for:
+
+* Custom software
+* Database servers
+
+Use **App Service** for:
+
+* Web apps
+
+---
+
+## 5. What is Azure Availability Set?
+
+An **Availability Set** ensures that multiple VMs are distributed across different hardware to improve availability.
+
+**Example**
+
+```
+Availability Set
+ ├── VM1
+ └── VM2
+```
+
+If one server fails → another VM continues running.
+
+---
+
+## 6. What is Azure Virtual Machine Scale Set?
+
+Scale sets allow **automatic scaling of VMs**.
+
+Example:
+
+```
+Traffic ↑
+
+Load Balancer
+ ├── VM1
+ ├── VM2
+ ├── VM3
+ └── VM4
+```
+
+New VMs are automatically created when traffic increases.
+
+---
+
+## 7. What operating systems are supported by Azure VM?
+
+Azure supports:
+
+* Linux
+* Windows
+* Custom OS images
+
+Examples:
+
+* Ubuntu
+* RedHat
+* Windows Server
+
+---
+
+## 8. What is Azure Managed Disk?
+
+Managed disks are storage volumes managed by Azure.
+
+Benefits:
+
+* Automatic availability
+* Better performance
+* Simplified management
+
+---
+
+## 9. What is Azure VM Image?
+
+An image is a template used to create VMs.
+
+Example images:
+
+* Ubuntu image
+* Windows Server image
+* Custom application image
+
+---
+
+## 10. How do you connect to Azure VM?
+
+| OS      | Connection |
+| ------- | ---------- |
+| Linux   | SSH        |
+| Windows | RDP        |
+
+Example:
+
+```
+ssh azureuser@vm-ip
+```
+
+---
+
+# 2️⃣ Intermediate Azure VM Interview Questions (10)
+
+## 11. What is Azure VM availability zone?
+
+Availability Zones are **physically separate datacenters** in the same region.
+
+Example:
+
+```
+Region: East US
+
+Zone1 -> VM1
+Zone2 -> VM2
+Zone3 -> VM3
+```
+
+If one datacenter fails → others remain operational.
+
+---
+
+## 12. What is Azure VM scale set autoscaling?
+
+Autoscaling automatically increases or decreases VM instances based on metrics.
+
+Example rule:
+
+```
+CPU > 70% -> Add 2 VMs
+CPU < 30% -> Remove 1 VM
+```
+
+---
+
+## 13. What is Azure Spot VM?
+
+Spot VMs provide **unused Azure compute capacity at very low cost**.
+
+Example use cases:
+
+* batch jobs
+* CI pipelines
+* test environments
+
+⚠️ Downside: Azure can terminate them anytime.
+
+---
+
+## 14. What is Azure VM extension?
+
+Extensions help automate configuration tasks.
+
+Examples:
+
+* Custom Script Extension
+* Monitoring Agent
+* Antivirus
+
+Example command:
+
+```
+az vm extension set \
+--publisher Microsoft.Azure.Extensions \
+--name CustomScript
+```
+
+---
+
+## 15. How do you secure an Azure VM?
+
+Security methods:
+
+* Network Security Groups (NSG)
+* Azure Bastion
+* Private IP
+* Disk Encryption
+
+Example:
+
+```
+Internet
+   |
+NSG (Allow 22 only)
+   |
+Azure VM
+```
+
+---
+
+## 16. What is Azure Bastion?
+
+Azure Bastion provides **secure RDP/SSH access through the Azure portal without exposing public IP**.
+
+Benefits:
+
+* No open SSH/RDP ports
+* More secure
+
+---
+
+## 17. Difference between Managed and Unmanaged disks?
+
+| Feature         | Managed    | Unmanaged |
+| --------------- | ---------- | --------- |
+| Storage Account | Not needed | Required  |
+| Management      | Automatic  | Manual    |
+| Performance     | Better     | Limited   |
+
+---
+
+## 18. What is Azure VM resizing?
+
+Changing VM size without recreating it.
+
+Example:
+
+```
+Standard_B2s -> Standard_D4s
+```
+
+Reason:
+
+* More CPU
+* More RAM
+
+---
+
+## 19. What is Azure VM backup?
+
+Azure provides VM backup using **Azure Backup.
+
+Features:
+
+* Automatic backups
+* Snapshot-based backup
+* Disaster recovery
+
+---
+
+## 20. What is Azure VM redeploy?
+
+Redeploy moves the VM to a **new Azure host**.
+
+Use case:
+
+Fix issues caused by underlying hardware failures.
+
+Command:
+
+```
+az vm redeploy
+```
+
+---
+
+# 3️⃣ Advanced Azure VM Interview Questions (15)
+
+## 21. How does Azure VM networking work?
+
+Components:
+
+```
+Internet
+   |
+Public IP
+   |
+Load Balancer
+   |
+Virtual Network (VNet)
+   |
+Subnet
+   |
+Azure VM
+```
+
+---
+
+## 22. How do you troubleshoot a VM that cannot be accessed?
+
+Steps:
+
+1. Check VM status
+2. Verify NSG rules
+3. Check subnet routing
+4. Verify firewall rules
+5. Check SSH/RDP service
+
+Example:
+
+```
+az vm get-instance-view
+```
+
+---
+
+## 23. How do you improve Azure VM performance?
+
+Methods:
+
+* Use Premium SSD
+* Choose compute optimized VM
+* Use proximity placement groups
+
+---
+
+## 24. What is proximity placement group?
+
+It ensures VMs are **physically close** to reduce latency.
+
+Used for:
+
+* HPC workloads
+* trading platforms
+
+---
+
+## 25. How does Azure VM load balancing work?
+
+Using **Azure Load Balancer.
+
+```
+Users
+   |
+Load Balancer
+  /  |  \
+VM1 VM2 VM3
+```
+
+Traffic distributed evenly.
+
+---
+
+## 26. How do you create an Azure VM using CLI?
+
+Example:
+
+```
+az vm create \
+--resource-group myRG \
+--name myVM \
+--image UbuntuLTS \
+--admin-username azureuser \
+--generate-ssh-keys
+```
+
+---
+
+## 27. What are ephemeral OS disks?
+
+Ephemeral disks store OS on **local VM storage instead of Azure storage**.
+
+Benefits:
+
+* faster boot
+* lower latency
+
+Used for:
+
+* stateless workloads
+* containers
+
+---
+
+## 28. How do you enable VM monitoring?
+
+Using **Azure Monitor.
+
+Metrics monitored:
+
+* CPU
+* Memory
+* Disk IOPS
+* Network traffic
+
+---
+
+## 29. What is Azure VM host maintenance?
+
+Azure periodically updates host machines.
+
+VM behavior options:
+
+* Automatic restart
+* Live migration
+* Maintenance control
+
+---
+
+## 30. What is Azure Dedicated Host?
+
+Dedicated physical server for a single customer.
+
+Benefits:
+
+* Compliance
+* Isolation
+* Licensing benefits
+
+---
+
+## 31. How do you migrate on-prem servers to Azure VM?
+
+Use **Azure Migrate.
+
+Steps:
+
+1. Discover servers
+2. Assess compatibility
+3. Replicate VM
+4. Cutover migration
+
+---
+
+## 32. What is Azure Disk Encryption?
+
+Encrypts VM disks using:
+
+* Azure Key Vault
+* BitLocker (Windows)
+* DM-Crypt (Linux)
+
+---
+
+## 33. What is VM image versioning?
+
+Images can be stored in **Azure Shared Image Gallery**.
+
+Benefits:
+
+* version control
+* global distribution
+* faster VM deployment
+
+---
+
+## 34. What is Azure VM failover?
+
+Failover ensures VM recovery during disasters.
+
+Using:
+
+* Azure Site Recovery
+
+Example architecture:
+
+```
+Primary Region
+   |
+VM running
+   |
+Replication
+   |
+Secondary Region
+   |
+Failover VM
+```
+
+---
+
+## 35. Real DevOps Scenario
+
+### Scenario
+
+Production website VM is down.
+
+### Troubleshooting steps
+
+1️⃣ Check VM health
+
+```
+az vm get-instance-view
+```
+
+2️⃣ Check disk space
+
+```
+df -h
+```
+
+3️⃣ Check service
+
+```
+systemctl status nginx
+```
+
+4️⃣ Check NSG
+
+```
+Allow port 80
+```
+
+5️⃣ Restart VM
+
+```
+az vm restart
+```
+
+---
+
+# ⭐ Pro Tip for DevOps Interviews
+
+Many companies ask Azure VM questions along with:
+
+* **Azure Kubernetes Service**
+* **Terraform**
+* **Ansible**
+* **Docker**
+
+Example question:
+
+**"How do you provision Azure VM using Terraform?"**
+
+
+Below are **30 Real DevOps Troubleshooting Scenarios for Azure Virtual Machines** commonly faced in production environments when working on **Microsoft Azure infrastructure**.
+Each scenario includes **Problem → Cause → Solution → Example commands**, which is very useful for **DevOps / SRE interviews and real incidents**.
+
+---
+
+# 30 Azure VM Real DevOps Troubleshooting Scenarios
+
+---
+
+# 1️⃣ VM Not Accessible via SSH/RDP
+
+### Problem
+
+Cannot connect to VM using SSH or RDP.
+
+### Possible Causes
+
+* Network Security Group blocking port
+* VM service stopped
+* Wrong IP address
+
+### Solution
+
+Check NSG rules.
+
+Example:
+
+```bash
+az vm open-port --port 22 --resource-group myRG --name myVM
+```
+
+---
+
+# 2️⃣ VM Stuck in "Starting" State
+
+### Cause
+
+Host hardware issue.
+
+### Solution
+
+Redeploy VM.
+
+```bash
+az vm redeploy --resource-group myRG --name myVM
+```
+
+---
+
+# 3️⃣ High CPU Usage on VM
+
+### Cause
+
+Application consuming excessive CPU.
+
+### Troubleshooting
+
+```bash
+top
+```
+
+Solution:
+
+* Restart service
+* Scale VM
+* Optimize application
+
+Monitoring via **Azure Monitor**.
+
+---
+
+# 4️⃣ Disk Full on VM
+
+### Cause
+
+Logs filling disk.
+
+### Check
+
+```bash
+df -h
+```
+
+Solution
+
+* Delete old logs
+* Add new data disk
+
+---
+
+# 5️⃣ VM Network Latency Issue
+
+### Cause
+
+VM located in different region or overloaded network.
+
+### Solution
+
+* Use proximity placement group
+* Optimize VNet
+
+---
+
+# 6️⃣ VM Restarting Frequently
+
+### Cause
+
+Kernel panic or system crash.
+
+Check logs
+
+```bash
+journalctl -xe
+```
+
+---
+
+# 7️⃣ VM Cannot Access Internet
+
+### Cause
+
+* Missing route
+* NSG block
+
+Check routes:
+
+```bash
+ip route
+```
+
+---
+
+# 8️⃣ Application Running but Website Not Accessible
+
+### Cause
+
+Port not exposed.
+
+Check
+
+```bash
+netstat -tulnp
+```
+
+Solution: Open port in NSG.
+
+---
+
+# 9️⃣ VM Not Appearing Healthy in Load Balancer
+
+Issue in **Azure Load Balancer.
+
+### Cause
+
+Health probe failing.
+
+Solution
+
+* Fix health check endpoint
+* Restart service
+
+---
+
+# 🔟 VM Provisioning Failed
+
+### Cause
+
+Quota exceeded.
+
+Check quota.
+
+Solution
+
+Request increase in Azure portal.
+
+---
+
+# 11️⃣ VM Deployment Slow
+
+### Cause
+
+Large image or region congestion.
+
+Solution
+
+Use Shared Image Gallery.
+
+---
+
+# 12️⃣ SSH Key Authentication Failed
+
+### Cause
+
+Wrong key pair.
+
+Solution
+
+Reset SSH key.
+
+```bash
+az vm user update
+```
+
+---
+
+# 13️⃣ VM Disk Performance Slow
+
+### Cause
+
+Using Standard HDD.
+
+Solution
+
+Upgrade to Premium SSD.
+
+---
+
+# 14️⃣ VM Cannot Mount Data Disk
+
+### Cause
+
+Disk not formatted.
+
+Solution
+
+```bash
+mkfs.ext4 /dev/sdc
+mount /dev/sdc /data
+```
+
+---
+
+# 15️⃣ VM Memory Usage Too High
+
+### Check
+
+```bash
+free -m
+```
+
+Solution
+
+* Restart memory heavy process
+* Upgrade VM size
+
+---
+
+# 16️⃣ VM Accidentally Deleted
+
+### Solution
+
+Recover using **Azure Backup.
+
+---
+
+# 17️⃣ VM Not Scaling Automatically
+
+Using VM scale set.
+
+Cause
+
+Autoscaling rule incorrect.
+
+Fix rule.
+
+Example
+
+```
+CPU > 70% → Add VM
+```
+
+---
+
+# 18️⃣ VM Cannot Connect to Database
+
+### Cause
+
+Subnet security restriction.
+
+Solution
+
+Check NSG inbound rules.
+
+---
+
+# 19️⃣ VM Extension Failed
+
+Example: monitoring agent.
+
+Check logs
+
+```bash
+/var/log/azure
+```
+
+---
+
+# 20️⃣ VM Boot Diagnostics Error
+
+Enable Boot Diagnostics.
+
+Check console logs.
+
+---
+
+# 21️⃣ VM Storage Throttling
+
+### Cause
+
+Disk IOPS limit exceeded.
+
+Solution
+
+Upgrade disk SKU.
+
+---
+
+# 22️⃣ VM Time Synchronization Issue
+
+### Cause
+
+NTP misconfigured.
+
+Fix:
+
+```bash
+timedatectl set-ntp true
+```
+
+---
+
+# 23️⃣ VM Cannot Reach Another VM in Same VNet
+
+### Cause
+
+NSG blocking internal traffic.
+
+Solution
+
+Allow subnet communication.
+
+---
+
+# 24️⃣ VM Public IP Changed
+
+Cause
+
+Dynamic IP.
+
+Solution
+
+Use static public IP.
+
+---
+
+# 25️⃣ VM OS Corruption
+
+### Cause
+
+Improper shutdown.
+
+Solution
+
+Recover using snapshot.
+
+---
+
+# 26️⃣ VM Backup Not Running
+
+Cause
+
+Backup policy missing.
+
+Fix using **Azure Backup.
+
+---
+
+# 27️⃣ VM Not Joining Domain
+
+Cause
+
+DNS misconfiguration.
+
+Check DNS:
+
+```bash
+cat /etc/resolv.conf
+```
+
+---
+
+# 28️⃣ VM Packet Loss
+
+### Cause
+
+Network congestion.
+
+Solution
+
+Move to same availability zone.
+
+---
+
+# 29️⃣ VM Deployment Fails with Terraform
+
+When using **Terraform.
+
+Cause
+
+Invalid VM size.
+
+Example error
+
+```
+VM size not available in region
+```
+
+---
+
+# 30️⃣ Production Outage Scenario
+
+### Scenario
+
+Users cannot access website.
+
+### Troubleshooting Flow
+
+```
+User
+  |
+Load Balancer
+  |
+VM
+  |
+Application
+  |
+Database
+```
+
+Steps
+
+1️⃣ Check Load balancer health
+2️⃣ Check VM health
+3️⃣ Check application logs
+4️⃣ Check database connectivity
+
+---
+
+# ⭐ Real Interview Tip (Very Important)
+
+In **DevOps interviews**, Azure VM troubleshooting questions often involve:
+
+* **Terraform VM provisioning failures**
+* **Azure Kubernetes Service node VM issues**
+* **Ansible configuration failures**
+* **Azure Monitor alerts**
+
+Example interview question:
+
+**“Production VM CPU suddenly spikes to 95%. How will you troubleshoot?”**
+
+Expected approach:
+
+```
+Check metrics → Check processes → Check logs → Scale VM → Fix application
+```
+
+---
+
+
