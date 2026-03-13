@@ -1,0 +1,679 @@
+
+# Azure Batch – DevOps Interview Q&A
+
+---
+
+# 1. Basic Level (10 Questions)
+
+### 1. What is Azure Batch?
+
+**Answer:**
+Azure Batch is a **cloud service used to run large-scale parallel and high-performance computing (HPC) workloads** efficiently.
+
+It allows you to:
+
+* Run thousands of compute tasks
+* Automatically manage compute nodes
+* Scale infrastructure automatically
+
+**Example Use Cases**
+
+* Video rendering
+* Financial risk modeling
+* Data processing
+* Machine learning training
+
+---
+
+### 2. What are the key components of Azure Batch?
+
+Main components:
+
+| Component     | Description                   |
+| ------------- | ----------------------------- |
+| Batch Account | Entry point for Batch service |
+| Pool          | Collection of compute nodes   |
+| Node          | VM executing tasks            |
+| Job           | Collection of tasks           |
+| Task          | Unit of work                  |
+
+---
+
+### 3. What is a Batch Pool?
+
+A **Pool** is a **collection of Virtual Machines** where batch jobs execute.
+
+Example:
+
+```
+Pool Name: video-render-pool
+VM Size: Standard_D4s_v3
+Nodes: 10
+```
+
+Tasks run on these compute nodes.
+
+---
+
+### 4. What is a Batch Job?
+
+A **Job** is a **container for multiple tasks**.
+
+Example:
+
+```
+Job: image-processing-job
+Tasks:
+task1 -> resize image
+task2 -> compress image
+task3 -> watermark
+```
+
+---
+
+### 5. What is a Task in Azure Batch?
+
+A **Task is a single unit of work** executed on a compute node.
+
+Example:
+
+```
+python process_data.py file1.csv
+```
+
+Each dataset processing can be one task.
+
+---
+
+### 6. What is the difference between Job and Task?
+
+| Job                 | Task                      |
+| ------------------- | ------------------------- |
+| Collection of tasks | Single unit of work       |
+| Manages execution   | Performs actual operation |
+
+Example:
+
+```
+Job -> ML Training
+Tasks -> train_model_1, train_model_2
+```
+
+---
+
+### 7. What types of compute nodes exist in Azure Batch?
+
+Two types:
+
+1. **Dedicated nodes**
+
+   * Reserved VMs
+   * Stable workloads
+
+2. **Low-priority nodes (Spot VMs)**
+
+   * Cheaper
+   * Can be preempted
+
+---
+
+### 8. What is an Application Package in Azure Batch?
+
+Application packages allow deployment of **applications to compute nodes**.
+
+Example:
+
+```
+FFmpeg
+Python runtime
+Custom ML model
+```
+
+---
+
+### 9. What storage options integrate with Azure Batch?
+
+Common storage:
+
+* Azure Blob Storage
+* Azure Data Lake Storage
+* Azure Files
+
+---
+
+### 10. What workloads typically use Azure Batch?
+
+Typical workloads:
+
+* HPC workloads
+* Media rendering
+* Data transformation
+* Simulation workloads
+
+---
+
+# 2. Intermediate Level (10 Questions)
+
+---
+
+### 1. How does Azure Batch autoscaling work?
+
+Autoscaling dynamically **adjusts number of nodes based on workload**.
+
+Example formula:
+
+```
+$TargetDedicatedNodes = pendingTasks * 0.5
+```
+
+If:
+
+```
+Pending Tasks = 100
+```
+
+Nodes:
+
+```
+50 nodes
+```
+
+---
+
+### 2. How do you submit a job to Azure Batch?
+
+Using:
+
+* Azure CLI
+* REST API
+* SDK
+* Azure Portal
+
+Example CLI:
+
+```
+az batch job create \
+--id data-job \
+--pool-id compute-pool
+```
+
+---
+
+### 3. What is a Start Task?
+
+Start task runs **when a compute node starts**.
+
+Used for:
+
+* Installing software
+* Configuring environment
+
+Example:
+
+```
+apt install python3
+pip install numpy
+```
+
+---
+
+### 4. What is task dependency?
+
+Tasks can run **only after another task finishes**.
+
+Example:
+
+```
+Task1 -> Download Data
+Task2 -> Process Data
+Task3 -> Generate Report
+```
+
+---
+
+### 5. How do you monitor Azure Batch jobs?
+
+Monitoring tools:
+
+* Azure Monitor
+* Azure Log Analytics
+* Azure Portal
+* Batch Explorer
+
+Metrics:
+
+* Task failures
+* Node health
+* Queue length
+
+---
+
+### 6. What is Batch Explorer?
+
+Azure Batch Explorer is a GUI tool used to:
+
+* Manage jobs
+* Monitor tasks
+* Debug nodes
+* View logs
+
+---
+
+### 7. How does Azure Batch handle failures?
+
+Retry policies exist.
+
+Example:
+
+```
+maxTaskRetryCount = 3
+```
+
+If task fails → retry automatically.
+
+---
+
+### 8. What is task scheduling in Azure Batch?
+
+Scheduling determines **how tasks run on nodes**.
+
+Types:
+
+* Pack
+* Spread
+
+Pack = maximize node usage
+Spread = distribute tasks evenly
+
+---
+
+### 9. What are Batch node states?
+
+Common states:
+
+| State    | Meaning        |
+| -------- | -------------- |
+| Starting | VM booting     |
+| Idle     | Ready for task |
+| Running  | Task executing |
+| Unusable | Node error     |
+
+---
+
+### 10. What security mechanisms exist in Azure Batch?
+
+Security options:
+
+* Azure AD authentication
+* Private endpoints
+* Managed identity
+* Encryption at rest
+
+---
+
+# 3. Advanced DevOps Production Troubleshooting Scenarios (15)
+
+---
+
+# 1. Batch tasks stuck in "Active" state
+
+### Problem
+
+Tasks remain **Active but not executing**.
+
+### Root Causes
+
+* No available nodes
+* Pool scaling issue
+* Node startup failure
+
+### Troubleshooting
+
+Check nodes:
+
+```
+az batch pool show --pool-id compute-pool
+```
+
+Verify:
+
+```
+Idle nodes
+```
+
+### Fix
+
+Increase nodes:
+
+```
+az batch pool resize --target-dedicated-nodes 20
+```
+
+---
+
+# 2. Compute nodes failing to start
+
+### Symptoms
+
+Nodes stuck in:
+
+```
+Starting state
+```
+
+### Cause
+
+Start task failure.
+
+Check logs:
+
+```
+/mnt/batch/tasks/startup
+```
+
+Example error:
+
+```
+apt repository not reachable
+```
+
+### Fix
+
+* Fix script
+* Use retry
+
+---
+
+# 3. Jobs failing due to missing dependencies
+
+### Scenario
+
+Task script:
+
+```
+python process.py
+```
+
+Error:
+
+```
+ModuleNotFoundError
+```
+
+### Root Cause
+
+Python library missing.
+
+### Fix
+
+Use start task:
+
+```
+pip install pandas numpy
+```
+
+---
+
+# 4. Azure Batch pool scaling too slowly
+
+### Problem
+
+Large backlog:
+
+```
+Pending Tasks = 5000
+Nodes = 10
+```
+
+### Root Cause
+
+Autoscale formula incorrect.
+
+Example:
+
+```
+$TargetDedicatedNodes = pendingTasks * 0.1
+```
+
+### Fix
+
+Adjust:
+
+```
+pendingTasks * 0.5
+```
+
+---
+
+# 5. Spot node preemption causing failures
+
+### Scenario
+
+Using low-priority nodes.
+
+Tasks terminated unexpectedly.
+
+### Cause
+
+Spot VM eviction.
+
+### Fix
+
+Use mix:
+
+```
+Dedicated nodes = 20
+Spot nodes = 80
+```
+
+---
+
+# 6. Tasks failing due to storage access errors
+
+### Error
+
+```
+403 Access Denied
+```
+
+### Root Cause
+
+Missing storage permissions.
+
+### Fix
+
+Assign role:
+
+```
+Storage Blob Data Contributor
+```
+
+Using:
+
+Azure Managed Identity
+
+---
+
+# 7. Batch nodes unable to download input files
+
+### Symptoms
+
+Task logs show:
+
+```
+Download failed
+```
+
+### Cause
+
+Network restriction.
+
+Check:
+
+* NSG rules
+* Storage firewall
+
+---
+
+# 8. High job queue delays
+
+### Scenario
+
+Thousands of tasks waiting.
+
+### Root Causes
+
+* Node shortage
+* Task runtime high
+
+### Fix
+
+Scale nodes.
+
+Example:
+
+```
+Pool size -> 200 nodes
+```
+
+---
+
+# 9. Node marked "Unusable"
+
+### Symptoms
+
+Node unusable.
+
+### Causes
+
+* Disk full
+* Agent crash
+
+Check logs:
+
+```
+/mnt/batch/tasks
+```
+
+Fix:
+
+```
+Reimage node
+```
+
+---
+
+# 10. Batch tasks failing randomly
+
+### Root Cause
+
+Transient failures.
+
+### Fix
+
+Enable retry:
+
+```
+maxTaskRetryCount = 5
+```
+
+---
+
+# 11. Batch job consuming excessive cost
+
+### Cause
+
+Nodes not scaling down.
+
+### Fix
+
+Autoscale rule:
+
+```
+if tasks == 0 then nodes = 0
+```
+
+---
+
+# 12. Task running extremely slow
+
+### Cause
+
+Wrong VM size.
+
+Example:
+
+```
+Standard_B2s
+```
+
+CPU insufficient.
+
+### Fix
+
+Upgrade:
+
+```
+Standard_D8s_v5
+```
+
+---
+
+# 13. Batch pool deployment failing
+
+### Error
+
+```
+Quota exceeded
+```
+
+### Fix
+
+Increase quota in:
+
+Azure Subscription
+
+---
+
+# 14. Batch node losing connectivity
+
+### Cause
+
+Firewall / DNS issue.
+
+Check:
+
+```
+nslookup storageaccount.blob.core.windows.net
+```
+
+---
+
+# 15. Batch jobs failing after node reboot
+
+### Cause
+
+Temporary disk lost.
+
+Fix:
+
+Store files in:
+
+* Azure Blob
+* Azure Files
+
+---
+
+# DevOps Pro Tip
+
+In **production environments**, Azure Batch is often integrated with:
+
+* Azure Kubernetes Service
+* Azure DevOps
+* Azure Data Factory
+
+For **large scale distributed processing pipelines**.
+
+---
+
+
