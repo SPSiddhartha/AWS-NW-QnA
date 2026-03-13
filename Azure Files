@@ -1,0 +1,520 @@
+Here are **Azure Files Interview Q&A for a DevOps Engineer (6+ Years Experience)** focusing on **basic → intermediate → advanced production troubleshooting scenarios**.
+
+---
+
+# Azure Files – DevOps Interview Q&A
+
+## 1️⃣ Basic Level (10 Q&A)
+
+**1. What is Azure Files?**
+Azure Files is a **fully managed cloud file share service** that provides **SMB (Server Message Block) and NFS protocols** to mount file shares from Azure Storage accounts.
+
+---
+
+**2. What protocols are supported by Azure Files?**
+Azure Files supports:
+
+* **SMB 3.1.1** (Windows/Linux/Mac)
+* **NFS 4.1** (Linux workloads)
+
+---
+
+**3. What are the storage tiers available in Azure Files?**
+Azure Files has two main tiers:
+
+* **Standard (HDD backed)** – Cost-effective
+* **Premium (SSD backed)** – High performance
+
+---
+
+**4. What is an Azure File Share?**
+A **File Share** is a logical container inside an **Azure Storage Account** where files and directories are stored.
+
+---
+
+**5. How can you mount Azure File Share on Linux?**
+
+Example:
+
+```bash
+sudo mount -t cifs //storageaccount.file.core.windows.net/share /mnt/share \
+-o vers=3.0,username=storageaccount,password=<key>,dir_mode=0777,file_mode=0777
+```
+
+---
+
+**6. What is Azure File Sync?**
+Azure File Sync synchronizes **on-premise Windows Server file shares with Azure Files**.
+
+---
+
+**7. What is the maximum size of an Azure File Share?**
+
+* **Standard:** up to **100 TiB**
+* **Premium:** up to **100 TiB**
+
+---
+
+**8. How do you secure Azure Files?**
+
+Security methods include:
+
+* Storage account keys
+* Shared Access Signature (SAS)
+* Azure AD authentication
+* Private Endpoint
+
+---
+
+**9. What is the difference between Blob Storage and Azure Files?**
+
+| Feature         | Azure Files | Blob Storage   |
+| --------------- | ----------- | -------------- |
+| Access Protocol | SMB/NFS     | REST API       |
+| Mountable       | Yes         | No             |
+| Use case        | File shares | Object storage |
+
+---
+
+**10. Can Azure Files be mounted in containers?**
+Yes. It can be mounted in:
+
+* Kubernetes
+* Docker
+* AKS
+
+---
+
+# 2️⃣ Intermediate Level (10 Q&A)
+
+---
+
+**1. How do you create Azure File Share using CLI?**
+
+```bash
+az storage share create \
+--account-name mystorageaccount \
+--name myfileshare
+```
+
+---
+
+**2. How can Azure Files be integrated with Kubernetes (AKS)?**
+
+Using **Azure File CSI driver**.
+
+Example Persistent Volume:
+
+```yaml
+kind: PersistentVolume
+apiVersion: v1
+spec:
+  azureFile:
+    secretName: azure-secret
+    shareName: fileshare
+```
+
+---
+
+**3. What is Soft Delete in Azure Files?**
+
+Soft delete allows **recovery of deleted file shares within a retention period**.
+
+Example:
+
+```
+Retention: 7–365 days
+```
+
+---
+
+**4. What is Snapshot in Azure Files?**
+
+Snapshots create **point-in-time backups of file shares**.
+
+Use cases:
+
+* Backup
+* Restore files
+* Data protection
+
+---
+
+**5. What is Azure Private Endpoint for Azure Files?**
+
+Private Endpoint allows **secure access to file shares through private IP within VNet**.
+
+Benefits:
+
+* No public internet exposure
+* Improved security
+
+---
+
+**6. How does identity-based authentication work?**
+
+Azure Files supports:
+
+* **Active Directory Domain Services**
+* **Azure AD DS**
+
+Users can authenticate using **Kerberos**.
+
+---
+
+**7. How do you monitor Azure File performance?**
+
+Using:
+
+* Azure Monitor
+* Metrics like
+
+```
+Transactions
+Egress
+Ingress
+Availability
+Latency
+```
+
+---
+
+**8. What are performance limits in Azure Files?**
+
+Example:
+
+| Tier     | Max IOPS |
+| -------- | -------- |
+| Standard | 10K      |
+| Premium  | 100K     |
+
+---
+
+**9. What is Azure File Share quota?**
+
+Quota defines **maximum storage capacity** for a file share.
+
+Example:
+
+```
+az storage share update --quota 5000
+```
+
+---
+
+**10. How do you backup Azure Files?**
+
+Using:
+
+* Azure Backup
+* Snapshot-based backup
+
+---
+
+# 3️⃣ Advanced Production Troubleshooting (15 Scenarios)
+
+These are **real DevOps production issues commonly asked in interviews.**
+
+---
+
+# 1️⃣ Mount Failure in Linux VM
+
+**Issue**
+
+Azure file share fails to mount.
+
+Error:
+
+```
+mount error(13): Permission denied
+```
+
+**Cause**
+
+Wrong storage key or SMB version.
+
+**Fix**
+
+```bash
+mount -t cifs //account.file.core.windows.net/share /mnt \
+-o vers=3.0,username=account,password=key
+```
+
+---
+
+# 2️⃣ High Latency in Azure File Share
+
+**Symptoms**
+
+Application slowdown.
+
+**Possible Causes**
+
+* Standard tier performance limits
+* High IOPS usage
+
+**Solution**
+
+Upgrade to **Premium Azure Files**.
+
+---
+
+# 3️⃣ Azure File Share Not Accessible from AKS
+
+**Symptoms**
+
+Pod error:
+
+```
+MountVolume.SetUp failed
+```
+
+**Root Cause**
+
+Incorrect storage secret.
+
+**Fix**
+
+Recreate Kubernetes secret:
+
+```bash
+kubectl create secret generic azure-secret \
+--from-literal=azurestorageaccountname=account \
+--from-literal=azurestorageaccountkey=key
+```
+
+---
+
+# 4️⃣ Storage Account Firewall Blocking Access
+
+**Symptoms**
+
+VM cannot access file share.
+
+**Error**
+
+```
+Network path not found
+```
+
+**Fix**
+
+Allow VNet:
+
+```
+Storage Account → Networking → Allow selected networks
+```
+
+---
+
+# 5️⃣ File Share Performance Degradation
+
+**Symptoms**
+
+Slow file read/write.
+
+**Root Cause**
+
+* Large directory listing
+* Many small files
+
+**Solution**
+
+* Split directories
+* Use Premium tier
+
+---
+
+# 6️⃣ File Share Deletion by Mistake
+
+**Solution**
+
+Recover via **Soft Delete**.
+
+Steps:
+
+```
+Storage Account → File Shares → Deleted shares
+```
+
+Restore share.
+
+---
+
+# 7️⃣ Snapshot Restore Failure
+
+**Symptoms**
+
+Restore operation fails.
+
+**Cause**
+
+Snapshot corrupted or storage permission issues.
+
+**Fix**
+
+Restore using CLI:
+
+```bash
+az storage share restore
+```
+
+---
+
+# 8️⃣ Azure File Sync Not Syncing
+
+**Symptoms**
+
+Files not syncing to cloud.
+
+**Root Cause**
+
+Sync agent service stopped.
+
+**Fix**
+
+Restart service:
+
+```
+FileSyncSvc
+```
+
+---
+
+# 9️⃣ Quota Exceeded Error
+
+**Symptoms**
+
+File uploads fail.
+
+Error:
+
+```
+ShareQuotaExceeded
+```
+
+**Fix**
+
+Increase quota.
+
+Example:
+
+```bash
+az storage share update --quota 10240
+```
+
+---
+
+# 🔟 Unauthorized Access Error
+
+**Error**
+
+```
+Access Denied
+```
+
+**Root Cause**
+
+Improper **NTFS permissions**.
+
+**Fix**
+
+Update ACL permissions.
+
+---
+
+# 1️⃣1️⃣ Azure Files Not Mounting After VM Restart
+
+**Cause**
+
+Mount not persistent.
+
+**Fix**
+
+Add entry to `/etc/fstab`.
+
+Example:
+
+```
+ //account.file.core.windows.net/share /mnt cifs vers=3.0
+```
+
+---
+
+# 1️⃣2️⃣ File Locking Issue
+
+**Symptoms**
+
+Multiple applications accessing file causing lock.
+
+**Fix**
+
+Enable **SMB multichannel** or adjust application logic.
+
+---
+
+# 1️⃣3️⃣ High Storage Costs
+
+**Cause**
+
+Unused snapshots or large files.
+
+**Fix**
+
+Implement lifecycle management.
+
+Example:
+
+```
+Delete snapshots older than 30 days
+```
+
+---
+
+# 1️⃣4️⃣ DNS Resolution Issue
+
+**Symptoms**
+
+Unable to resolve storage endpoint.
+
+**Fix**
+
+Check DNS:
+
+```
+nslookup storageaccount.file.core.windows.net
+```
+
+---
+
+# 1️⃣5️⃣ Backup Failure
+
+**Cause**
+
+Backup vault permission missing.
+
+**Fix**
+
+Grant RBAC role:
+
+```
+Storage File Data SMB Share Contributor
+```
+
+---
+
+✅ These **Azure Files questions are commonly asked in:**
+
+* **Microsoft Azure DevOps interviews**
+* **Cloud Engineer interviews**
+* **SRE production troubleshooting rounds**
+
+---
+
+
+
+
+* **AKS + Azure Files storage crashes**
+* **SMB performance bottlenecks**
+* **File Sync DR failures**
+* **Multi-region storage design issues**.
