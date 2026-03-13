@@ -571,3 +571,450 @@ Every organization should maintain **2 emergency global admin accounts without M
 * **Azure AD + AKS + DevOps Pipeline Authentication Flow**
 * **Azure AD Security Best Practices for DevOps Engineers**
 
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Below are **Real DevOps Production Incidents related to Azure Identity** focusing on **Microsoft Entra ID (formerly Azure Active Directory)** used with **Microsoft Azure** environments.
+
+These are **real-world identity incidents DevOps/SRE teams face in production systems**.
+
+---
+
+# 20 Real DevOps Production Incidents – Azure AD / Entra ID
+
+---
+
+# 1️⃣ Expired Service Principal Secret Broke CI/CD
+
+### Incident
+
+Deployment pipelines suddenly failed.
+
+```
+AADSTS7000215: Invalid client secret
+```
+
+### Root Cause
+
+Service Principal secret expired.
+
+### Example
+
+Azure DevOps pipeline authenticating Azure.
+
+### Fix
+
+Rotate secret.
+
+```bash
+az ad sp credential reset --name <app-id>
+```
+
+### Prevention
+
+Use **certificate authentication instead of secrets**.
+
+---
+
+# 2️⃣ Production AKS Access Failure
+
+### Incident
+
+Engineers could not access production Kubernetes cluster.
+
+### Root Cause
+
+RBAC misconfiguration between **AKS and Azure AD**.
+
+### Fix
+
+Reconfigure cluster RBAC.
+
+```bash
+az aks update \
+--resource-group prod-rg \
+--name prod-aks \
+--enable-aad
+```
+
+### Lesson
+
+Always test **AAD RBAC integration** in staging.
+
+---
+
+# 3️⃣ Conditional Access Blocked DevOps Automation
+
+### Incident
+
+Terraform deployment suddenly failed.
+
+### Root Cause
+
+Conditional Access policy required MFA.
+
+Automation cannot complete MFA.
+
+### Fix
+
+Exclude service principals.
+
+```
+Conditional Access → Exclude workload identity
+```
+
+---
+
+# 4️⃣ Expired Certificate in App Registration
+
+### Incident
+
+Internal microservice authentication stopped working.
+
+### Root Cause
+
+Expired certificate in **App Registration**.
+
+### Fix
+
+Upload new certificate.
+
+```
+Entra ID
+→ App Registrations
+→ Certificates & Secrets
+```
+
+### Prevention
+
+Enable **certificate expiration alerts**.
+
+---
+
+# 5️⃣ Massive Login Failures Across Organization
+
+### Incident
+
+Thousands of users unable to login.
+
+### Root Cause
+
+DNS issue affecting login endpoint.
+
+Example:
+
+```
+login.microsoftonline.com unreachable
+```
+
+### Fix
+
+Network team fixed DNS resolution.
+
+### Lesson
+
+Always monitor **identity endpoints**.
+
+---
+
+# 6️⃣ Unauthorized Resource Creation
+
+### Incident
+
+Unexpected VMs created in subscription.
+
+### Root Cause
+
+Compromised credentials of DevOps engineer.
+
+### Fix
+
+Immediate actions:
+
+1. Disable account
+2. Rotate credentials
+3. Audit activity logs
+
+### Prevention
+
+Use **Privileged Identity Management (PIM)**.
+
+---
+
+# 7️⃣ Azure DevOps Service Connection Failure
+
+### Incident
+
+Pipeline error:
+
+```
+Failed to obtain access token
+```
+
+### Root Cause
+
+Deleted service principal.
+
+### Fix
+
+Recreate service principal.
+
+```bash
+az ad sp create-for-rbac
+```
+
+---
+
+# 8️⃣ Key Vault Access Denied
+
+### Incident
+
+Application unable to retrieve secrets.
+
+### Root Cause
+
+Managed identity missing permission.
+
+### Fix
+
+```bash
+az keyvault set-policy \
+--name prod-kv \
+--object-id <identity-id> \
+--secret-permissions get list
+```
+
+---
+
+# 9️⃣ Azure AD Sync Failure (Hybrid Identity)
+
+### Incident
+
+New users not appearing in Azure.
+
+### Root Cause
+
+Sync stopped in **Azure AD Connect**.
+
+### Fix
+
+Restart service.
+
+```powershell
+Start-Service ADSync
+```
+
+---
+
+# 🔟 Token Expiration Breaking APIs
+
+### Incident
+
+Application API returned:
+
+```
+401 Unauthorized
+```
+
+### Root Cause
+
+Access token expired and refresh token not implemented.
+
+### Fix
+
+Implement OAuth refresh token flow.
+
+---
+
+# 11️⃣ Guest Users Lost Access
+
+### Incident
+
+External vendors unable to access application.
+
+### Root Cause
+
+Tenant B2B policy updated.
+
+### Fix
+
+Reconfigure **B2B collaboration policy**.
+
+---
+
+# 12️⃣ Conditional Access Blocked Production Monitoring
+
+### Incident
+
+Monitoring tool failed to login.
+
+### Root Cause
+
+New Conditional Access policy requiring compliant devices.
+
+### Fix
+
+Exclude monitoring service accounts.
+
+---
+
+# 13️⃣ App Registration Permissions Removed
+
+### Incident
+
+Microservice unable to access Graph API.
+
+### Root Cause
+
+Admin removed API permissions accidentally.
+
+### Fix
+
+```
+App Registration
+→ API permissions
+→ Grant Admin Consent
+```
+
+---
+
+# 14️⃣ Identity Token Size Limit Reached
+
+### Incident
+
+Application login failure.
+
+### Root Cause
+
+User belongs to too many groups.
+
+Azure token size exceeded limit.
+
+### Fix
+
+Use **group filtering**.
+
+---
+
+# 15️⃣ Break Glass Account Missing
+
+### Incident
+
+Admin locked out due to strict Conditional Access policy.
+
+### Root Cause
+
+All admin accounts required MFA.
+
+MFA system outage.
+
+### Fix
+
+Create emergency admin accounts.
+
+### Best Practice
+
+Maintain **2 break-glass global admin accounts**.
+
+---
+
+# 16️⃣ RBAC Permission Drift
+
+### Incident
+
+Developers suddenly gained owner access.
+
+### Root Cause
+
+Terraform state drift.
+
+### Fix
+
+Reapply RBAC policy via IaC.
+
+---
+
+# 17️⃣ Tenant-Wide Authentication Latency
+
+### Incident
+
+Slow login across enterprise apps.
+
+### Root Cause
+
+Regional Azure AD outage.
+
+### Fix
+
+Use **Microsoft service health dashboard**.
+
+---
+
+# 18️⃣ Expired Federation Certificate
+
+### Incident
+
+Users from on-prem AD cannot login.
+
+### Root Cause
+
+Expired federation certificate in ADFS.
+
+### Fix
+
+Renew certificate.
+
+---
+
+# 19️⃣ Managed Identity Disabled
+
+### Incident
+
+AKS workload could not access storage.
+
+### Root Cause
+
+Managed identity accidentally disabled.
+
+### Fix
+
+Re-enable identity.
+
+---
+
+# 20️⃣ Conditional Access Policy Loop
+
+### Incident
+
+Users stuck in repeated login redirect.
+
+### Root Cause
+
+Two policies conflicting.
+
+### Fix
+
+Simplify Conditional Access rules.
+
+---
+
+# Common DevOps Identity Monitoring Tools
+
+| Tool                  | Purpose                   |
+| --------------------- | ------------------------- |
+| Azure AD Sign-in Logs | Authentication monitoring |
+| Azure Activity Logs   | Resource access auditing  |
+| Azure Monitor         | Identity metrics          |
+| Log Analytics         | Security investigation    |
+
+---
+
+✅ If you want, I can also share **EXTREMELY valuable DevOps interview content**:
+
+* **50 Azure Identity Outage Postmortems**
+* **Azure AD + AKS Authentication Architecture**
+* **Complete DevOps Identity Troubleshooting Guide**
+* **100 Azure DevOps Interview Scenarios (Most asked in FAANG + MNC)**
+
+These are **very helpful for 7–10+ years DevOps / SRE interviews.**
+
+
