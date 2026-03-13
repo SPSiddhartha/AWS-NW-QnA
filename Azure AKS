@@ -1,0 +1,1039 @@
+Here are **Azure Kubernetes Service (AKS) Interview Questions & Answers** divided into **Basic, Intermediate, and Advanced** levels with **examples and explanations**. These are useful for **DevOps / Cloud / SRE interviews**, especially if you work with **Terraform, Kubernetes, and cloud platforms** as mentioned in your previous discussions.
+
+---
+
+# Azure AKS Interview Questions & Answers
+
+## 10 Basic AKS Questions
+
+### 1. What is Azure Kubernetes Service (AKS)?
+
+**Answer:**
+AKS is a **managed Kubernetes service** provided by Microsoft in Microsoft Azure that simplifies deploying, managing, and scaling containerized applications.
+
+**Explanation**
+
+* Azure manages the **Kubernetes control plane**.
+* Users manage **worker nodes**.
+
+**Example**
+
+```bash
+az aks create \
+--resource-group myRG \
+--name myAKSCluster \
+--node-count 3 \
+--enable-addons monitoring
+```
+
+---
+
+### 2. What components are managed by Azure in AKS?
+
+**Answer**
+
+Azure manages:
+
+* Kubernetes **API Server**
+* **etcd**
+* **Scheduler**
+* **Controller Manager**
+
+You only manage:
+
+* Worker nodes
+* Pods
+* Deployments
+
+---
+
+### 3. What is a Node Pool in AKS?
+
+**Answer**
+
+A **Node Pool** is a group of nodes with the same configuration.
+
+**Example**
+
+* System node pool → system pods
+* User node pool → application workloads
+
+```bash
+az aks nodepool add \
+--cluster-name myAKSCluster \
+--resource-group myRG \
+--name userpool \
+--node-count 3
+```
+
+---
+
+### 4. What networking models does AKS support?
+
+**Answer**
+
+AKS supports:
+
+1. **Azure CNI**
+2. **Kubenet**
+
+**Example**
+
+| Network Type | Description           |
+| ------------ | --------------------- |
+| Azure CNI    | Pods get IP from VNet |
+| Kubenet      | Pods get internal IP  |
+
+---
+
+### 5. What is a Pod in Kubernetes?
+
+**Answer**
+
+A **Pod** is the smallest deployable unit in Kubernetes.
+
+**Example**
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+```
+
+---
+
+### 6. What is the difference between AKS and self-managed Kubernetes?
+
+| Feature       | AKS              | Self Managed    |
+| ------------- | ---------------- | --------------- |
+| Control plane | Managed by Azure | Managed by user |
+| Scaling       | Easy             | Manual          |
+| Upgrades      | Automated        | Manual          |
+
+---
+
+### 7. What is Azure Container Registry used for?
+
+**Answer**
+
+Azure Container Registry (ACR) stores container images used by AKS.
+
+**Example**
+
+```bash
+az acr login --name myregistry
+docker push myregistry.azurecr.io/app:v1
+```
+
+---
+
+### 8. What is kubectl?
+
+**Answer**
+
+kubectl is a CLI tool used to interact with Kubernetes clusters.
+
+Example:
+
+```bash
+kubectl get pods
+kubectl get nodes
+```
+
+---
+
+### 9. What is a Kubernetes Deployment?
+
+**Answer**
+
+A **Deployment** manages application replicas.
+
+Example:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app
+spec:
+  replicas: 3
+```
+
+---
+
+### 10. How do you connect to an AKS cluster?
+
+```bash
+az aks get-credentials \
+--resource-group myRG \
+--name myAKSCluster
+```
+
+Then verify:
+
+```bash
+kubectl get nodes
+```
+
+---
+
+# 10 Intermediate AKS Questions
+
+---
+
+### 11. What is AKS autoscaling?
+
+AKS supports two autoscaling methods:
+
+1. **Horizontal Pod Autoscaler (HPA)**
+2. **Cluster Autoscaler**
+
+Example:
+
+```bash
+kubectl autoscale deployment web \
+--cpu-percent=50 \
+--min=2 \
+--max=10
+```
+
+---
+
+### 12. What is the difference between HPA and Cluster Autoscaler?
+
+| Feature  | HPA        | Cluster Autoscaler |
+| -------- | ---------- | ------------------ |
+| Scales   | Pods       | Nodes              |
+| Based on | CPU/Memory | Pending pods       |
+
+---
+
+### 13. What is an Ingress Controller?
+
+Ingress manages external access to services.
+
+Common controller:
+
+NGINX Ingress Controller
+
+Example:
+
+```yaml
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+```
+
+---
+
+### 14. What is Azure CNI networking?
+
+Azure CNI assigns **IP addresses from the VNet to Pods**.
+
+Benefits
+
+* direct VNet connectivity
+* better enterprise networking
+
+---
+
+### 15. How do you secure AKS clusters?
+
+Security methods:
+
+* **Azure AD integration**
+* **RBAC**
+* **Network Policies**
+* **Private clusters**
+
+---
+
+### 16. What are AKS Add-ons?
+
+Add-ons provide extra capabilities.
+
+Examples:
+
+* Monitoring
+* Ingress
+* Azure Policy
+
+Monitoring uses
+Azure Monitor
+
+---
+
+### 17. What is Helm?
+
+Helm is a **Kubernetes package manager**.
+
+Example:
+
+```bash
+helm install myapp stable/nginx
+```
+
+---
+
+### 18. What is a StatefulSet?
+
+Used for **stateful applications** like databases.
+
+Example apps:
+
+* MongoDB
+* MySQL
+
+---
+
+### 19. What is Azure Policy for AKS?
+
+Azure Policy ensures compliance rules.
+
+Example rules:
+
+* Only approved container images
+* Mandatory labels
+
+---
+
+### 20. How do you monitor AKS?
+
+Monitoring tools:
+
+* Azure Monitor
+* Prometheus
+* Grafana
+
+Example:
+
+```bash
+kubectl top nodes
+```
+
+---
+
+# 15 Advanced AKS Interview Questions
+
+---
+
+### 21. How does AKS cluster autoscaler work?
+
+Cluster autoscaler:
+
+1. Detects **pending pods**
+2. Adds nodes
+3. Removes idle nodes
+
+Example:
+
+```bash
+az aks update \
+--enable-cluster-autoscaler \
+--min-count 2 \
+--max-count 10
+```
+
+---
+
+### 22. What is Private AKS Cluster?
+
+A **private cluster** exposes API server only within a VNet.
+
+Benefits:
+
+* improved security
+* no public endpoint
+
+---
+
+### 23. What is Azure AD Pod Identity?
+
+Allows pods to access Azure services securely.
+
+Example:
+
+Pod accessing
+Azure Key Vault
+
+without storing credentials.
+
+---
+
+### 24. How does AKS handle upgrades?
+
+Upgrade process:
+
+1. Upgrade control plane
+2. Upgrade node pools
+3. Drain nodes
+4. Replace nodes
+
+Command:
+
+```bash
+az aks upgrade
+```
+
+---
+
+### 25. What is Kubernetes Network Policy?
+
+Controls **pod-to-pod traffic**.
+
+Example:
+
+Allow only frontend to backend communication.
+
+---
+
+### 26. How do you implement CI/CD with AKS?
+
+Typical pipeline:
+
+Code → Build → Push → Deploy
+
+Tools:
+
+* Jenkins
+* Azure DevOps
+* GitHub Actions
+
+---
+
+### 27. How do you troubleshoot pending pods?
+
+Steps:
+
+```bash
+kubectl describe pod
+kubectl get events
+```
+
+Common issues:
+
+* insufficient CPU
+* node selector mismatch
+
+---
+
+### 28. How do you implement blue-green deployment in AKS?
+
+Steps:
+
+1. Deploy new version
+2. Test
+3. Switch traffic via Service or Ingress
+
+---
+
+### 29. What is Azure CNI Overlay?
+
+Allows:
+
+* more pods
+* less IP exhaustion
+
+Useful for **large clusters**.
+
+---
+
+### 30. What is Pod Disruption Budget?
+
+Ensures minimum pods are available during updates.
+
+Example:
+
+```yaml
+minAvailable: 2
+```
+
+---
+
+### 31. What is Container Insights?
+
+Feature of Azure Monitor used for AKS observability.
+
+Tracks:
+
+* node metrics
+* pod metrics
+* logs
+
+---
+
+### 32. How do you troubleshoot AKS networking issues?
+
+Steps:
+
+1. Check service
+2. Check endpoints
+3. Verify DNS
+
+Commands:
+
+```bash
+kubectl get svc
+kubectl get endpoints
+```
+
+---
+
+### 33. What is workload identity in AKS?
+
+Workload identity allows **Kubernetes workloads to authenticate with Azure services using Azure AD**.
+
+---
+
+### 34. What is the difference between DaemonSet and Deployment?
+
+| Feature  | Deployment     | DaemonSet         |
+| -------- | -------------- | ----------------- |
+| Pods     | selected nodes | all nodes         |
+| Use case | apps           | monitoring agents |
+
+Example:
+
+* Logging agent
+* Monitoring agents
+
+---
+
+### 35. How do you design production AKS architecture?
+
+Production architecture includes:
+
+* Multiple node pools
+* Private cluster
+* Azure CNI networking
+* Autoscaling
+* Monitoring
+
+Architecture:
+
+```
+Internet
+   │
+Azure Load Balancer
+   │
+Ingress Controller
+   │
+AKS Cluster
+ ├─ Node Pool (System)
+ └─ Node Pool (Apps)
+```
+
+---
+
+Here are **30 Real DevOps Troubleshooting Scenarios for Azure Kubernetes Service (AKS)** with **problem, root cause, and solution**. These scenarios are commonly faced by **DevOps / SRE engineers working with Kubernetes clusters in production**.
+
+---
+
+# 30 Azure AKS Real DevOps Troubleshooting Scenarios
+
+---
+
+# 1. Pods stuck in Pending state
+
+**Problem**
+
+```
+kubectl get pods
+STATUS: Pending
+```
+
+**Possible Causes**
+
+* No available node resources
+* Node selector mismatch
+* Taints on nodes
+
+**Troubleshooting**
+
+```bash
+kubectl describe pod <pod-name>
+```
+
+**Example Output**
+
+```
+0/3 nodes available: insufficient CPU
+```
+
+**Fix**
+
+Increase nodes:
+
+```bash
+az aks scale \
+--resource-group myRG \
+--name myAKS \
+--node-count 5
+```
+
+---
+
+# 2. ImagePullBackOff Error
+
+**Problem**
+
+```
+ImagePullBackOff
+```
+
+**Cause**
+
+* Wrong image name
+* Private registry authentication issue
+
+Often happens when using
+Azure Container Registry.
+
+**Fix**
+
+Attach registry to AKS:
+
+```bash
+az aks update \
+--resource-group myRG \
+--name myAKS \
+--attach-acr myregistry
+```
+
+---
+
+# 3. Pod CrashLoopBackOff
+
+**Problem**
+
+Pod keeps restarting.
+
+**Check Logs**
+
+```bash
+kubectl logs pod-name
+```
+
+**Example**
+
+```
+Database connection failed
+```
+
+**Fix**
+
+Correct configuration or secrets.
+
+---
+
+# 4. Node Not Ready
+
+**Problem**
+
+```
+kubectl get nodes
+STATUS: NotReady
+```
+
+**Cause**
+
+* kubelet stopped
+* networking issue
+* disk pressure
+
+**Fix**
+
+Restart node via VMSS in Azure.
+
+---
+
+# 5. AKS Cluster Autoscaler Not Working
+
+**Cause**
+
+Autoscaler not enabled.
+
+**Check**
+
+```bash
+az aks show --name myAKS
+```
+
+**Fix**
+
+```bash
+az aks update \
+--enable-cluster-autoscaler \
+--min-count 2 \
+--max-count 10
+```
+
+---
+
+# 6. External LoadBalancer not getting IP
+
+**Problem**
+
+Service stuck in:
+
+```
+pending external IP
+```
+
+**Cause**
+
+Azure load balancer misconfiguration.
+
+**Check**
+
+```bash
+kubectl describe svc service-name
+```
+
+---
+
+# 7. DNS resolution failing inside pods
+
+**Test**
+
+```bash
+kubectl exec pod-name -- nslookup google.com
+```
+
+**Cause**
+
+Issue with CoreDNS.
+
+**Fix**
+
+Restart DNS:
+
+```bash
+kubectl rollout restart deployment coredns -n kube-system
+```
+
+---
+
+# 8. AKS cluster upgrade failure
+
+**Cause**
+
+* incompatible Kubernetes version
+* deprecated APIs
+
+**Check**
+
+```bash
+az aks get-upgrades
+```
+
+---
+
+# 9. High CPU usage on nodes
+
+**Check**
+
+```bash
+kubectl top nodes
+```
+
+Monitoring often done using
+Azure Monitor.
+
+**Fix**
+
+Enable autoscaling.
+
+---
+
+# 10. Pods cannot access Azure services
+
+**Cause**
+
+Identity configuration issue.
+
+Solution uses
+Azure Key Vault with managed identity.
+
+---
+
+# 11. AKS API Server Timeout
+
+**Error**
+
+```
+Unable to connect to server
+```
+
+**Cause**
+
+* private cluster networking
+* firewall rules
+
+---
+
+# 12. Container logs missing
+
+**Check**
+
+```bash
+kubectl logs pod-name
+```
+
+Enable logging using
+Azure Monitor Container Insights.
+
+---
+
+# 13. Node Disk Pressure
+
+```
+Node has disk pressure
+```
+
+**Cause**
+
+Container logs filling disk.
+
+**Fix**
+
+Clean old images.
+
+---
+
+# 14. Kubernetes Secrets not mounting
+
+**Cause**
+
+Wrong secret name.
+
+**Check**
+
+```bash
+kubectl get secrets
+```
+
+---
+
+# 15. Pods cannot communicate with each other
+
+**Cause**
+
+Network policy blocking traffic.
+
+Example policy:
+
+```yaml
+kind: NetworkPolicy
+```
+
+---
+
+# 16. AKS ingress not routing traffic
+
+Common issue with
+NGINX Ingress Controller.
+
+Check:
+
+```bash
+kubectl get ingress
+```
+
+---
+
+# 17. CI/CD pipeline failing to deploy
+
+Often happens with
+
+* Jenkins
+* Azure DevOps
+
+**Error**
+
+```
+kubectl: unauthorized
+```
+
+Fix credentials.
+
+---
+
+# 18. Horizontal Pod Autoscaler not scaling
+
+Check metrics server.
+
+```bash
+kubectl get apiservices
+```
+
+---
+
+# 19. Kubernetes Service not reachable
+
+Check endpoints.
+
+```bash
+kubectl get endpoints
+```
+
+---
+
+# 20. Pods failing due to insufficient memory
+
+Error:
+
+```
+OOMKilled
+```
+
+Fix:
+
+Increase memory limits.
+
+---
+
+# 21. Persistent Volume not attaching
+
+Check:
+
+```bash
+kubectl describe pvc
+```
+
+Storage often backed by
+Azure Disk Storage.
+
+---
+
+# 22. AKS nodes not scaling
+
+Cause:
+
+VM quota exceeded.
+
+Check Azure quotas.
+
+---
+
+# 23. Slow pod startup
+
+Cause:
+
+Large container images.
+
+Store images in
+Azure Container Registry near cluster.
+
+---
+
+# 24. Application returning 502/503 errors
+
+Check:
+
+Ingress logs.
+
+```bash
+kubectl logs ingress-controller
+```
+
+---
+
+# 25. Kubernetes configmap changes not applied
+
+Restart deployment:
+
+```bash
+kubectl rollout restart deployment app
+```
+
+---
+
+# 26. Pod scheduling issues with taints
+
+Nodes may have:
+
+```
+node-role.kubernetes.io/system
+```
+
+Add tolerations.
+
+---
+
+# 27. Certificate issues with ingress
+
+Check TLS secret.
+
+```bash
+kubectl describe secret tls-secret
+```
+
+---
+
+# 28. Pod network latency
+
+Check:
+
+* CNI configuration
+* VNet peering
+
+AKS often uses **Azure CNI networking**.
+
+---
+
+# 29. Cluster running out of IP addresses
+
+Cause:
+
+Azure CNI IP exhaustion.
+
+Fix:
+
+Use **Azure CNI Overlay**.
+
+---
+
+# 30. Monitoring dashboards not showing metrics
+
+Often seen with
+
+* Prometheus
+* Grafana
+
+Fix:
+
+Restart exporters or verify scraping configuration.
+
+---
+
+# Real DevOps Troubleshooting Flow (AKS)
+
+Typical investigation steps used by SRE teams:
+
+```
+1 Check Pod
+kubectl get pods
+
+2 Describe Pod
+kubectl describe pod
+
+3 Check Logs
+kubectl logs
+
+4 Check Node Health
+kubectl get nodes
+
+5 Check Services
+kubectl get svc
+
+6 Check Events
+kubectl get events
+```
+
+---
+
