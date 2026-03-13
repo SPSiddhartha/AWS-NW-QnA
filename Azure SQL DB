@@ -1,0 +1,566 @@
+Below are **DevOps-focused Q&A for Azure SQL Database** targeted for **6+ years experienced DevOps engineers**.
+
+---
+
+# 1️⃣ Intermediate Level (10 Q&A)
+
+### 1. What is Azure SQL Database?
+
+**Answer:**
+Azure SQL Database is a fully managed **PaaS relational database service** on **Microsoft Azure** based on the **Microsoft SQL Server** engine. It handles patching, backups, scaling, and high availability automatically.
+
+---
+
+### 2. What are the deployment models of Azure SQL DB?
+
+**Answer:**
+
+1. **Single Database** – isolated database with dedicated resources
+2. **Elastic Pool** – multiple databases share resources
+3. **Managed Instance** – near full SQL Server compatibility
+
+---
+
+### 3. What is DTU in Azure SQL DB?
+
+**Answer:**
+**DTU (Database Transaction Unit)** is a blended measure of CPU, memory, reads, and writes used for performance sizing.
+
+Example tiers:
+
+* Basic
+* Standard
+* Premium
+
+---
+
+### 4. What is vCore model?
+
+**Answer:**
+The **vCore model** provides more transparency by separating:
+
+* CPU
+* Memory
+* Storage
+* IO
+
+Example:
+
+```
+4 vCore
+32 GB storage
+Gen5 hardware
+```
+
+---
+
+### 5. What is Geo-Replication?
+
+**Answer:**
+Geo-replication replicates databases to another Azure region for disaster recovery.
+
+Example:
+
+```
+Primary : East US
+Secondary : West Europe
+```
+
+Failover can be manual or automatic.
+
+---
+
+### 6. What is Elastic Pool?
+
+**Answer:**
+Elastic pools allow multiple databases to share compute resources.
+
+Example:
+
+```
+Pool DTU : 200
+DB1 : 50 DTU
+DB2 : 30 DTU
+DB3 : variable usage
+```
+
+Useful for **SaaS multi-tenant applications**.
+
+---
+
+### 7. What monitoring tools are used for Azure SQL DB?
+
+**Answer:**
+
+DevOps teams typically use:
+
+* **Azure Monitor**
+* **Azure Log Analytics**
+* **Azure SQL Analytics**
+
+Example metrics:
+
+```
+DTU percentage
+CPU usage
+Deadlocks
+Storage usage
+Query duration
+```
+
+---
+
+### 8. What are Azure SQL backups?
+
+**Answer:**
+Azure automatically performs:
+
+| Backup Type     | Frequency          |
+| --------------- | ------------------ |
+| Full            | Weekly             |
+| Differential    | Every 12-24 hrs    |
+| Transaction log | Every 5-10 minutes |
+
+---
+
+### 9. What is Azure SQL Failover Group?
+
+**Answer:**
+Failover groups allow **automatic failover** across regions with a single connection endpoint.
+
+Example:
+
+```
+app-db.database.windows.net
+```
+
+Applications reconnect automatically.
+
+---
+
+### 10. How do DevOps engineers deploy Azure SQL DB via IaC?
+
+**Answer:**
+Using **Terraform** or **Azure Resource Manager**.
+
+Example Terraform:
+
+```hcl
+resource "azurerm_mssql_database" "db" {
+  name           = "prod-db"
+  server_id      = azurerm_mssql_server.sql.id
+  sku_name       = "S3"
+}
+```
+
+---
+
+# 2️⃣ Real DevOps Production Incidents (10)
+
+---
+
+### 1. Incident: Sudden 100% DTU spike
+
+**Issue**
+
+Application API latency increased.
+
+**Investigation**
+
+Using:
+
+```
+Azure Monitor → Metrics → DTU %
+```
+
+Found heavy query.
+
+**Root Cause**
+
+Missing index.
+
+**Fix**
+
+```
+CREATE INDEX idx_userid
+ON orders(userid)
+```
+
+---
+
+### 2. Incident: Database connection timeout
+
+**Symptoms**
+
+```
+Login timeout expired
+```
+
+**Root Cause**
+
+Firewall rules missing.
+
+**Fix**
+
+Allow App Service IP:
+
+```
+Azure SQL → Networking → Firewall
+```
+
+---
+
+### 3. Incident: Storage full
+
+**Error**
+
+```
+Database has reached its storage quota
+```
+
+**Resolution**
+
+Increase storage:
+
+```
+SQL DB → Compute + Storage → Scale
+```
+
+---
+
+### 4. Incident: Deadlock errors
+
+**Symptoms**
+
+```
+Transaction (Process ID 58) was deadlocked
+```
+
+**Root Cause**
+
+Two services updating same rows.
+
+**Fix**
+
+Implemented retry logic and index optimization.
+
+---
+
+### 5. Incident: Slow queries after deployment
+
+**Root Cause**
+
+Bad query plan cached.
+
+**Fix**
+
+```
+DBCC FREEPROCCACHE
+```
+
+Or force plan via Query Store.
+
+---
+
+### 6. Incident: High connection count
+
+**Problem**
+
+App created too many DB connections.
+
+**Fix**
+
+Enabled connection pooling.
+
+Example (.NET)
+
+```
+Max Pool Size=100
+```
+
+---
+
+### 7. Incident: Failover triggered unexpectedly
+
+**Cause**
+
+Azure detected infrastructure issue.
+
+**Fix**
+
+Configured **failover groups** for seamless failover.
+
+---
+
+### 8. Incident: Login failed errors
+
+**Error**
+
+```
+Login failed for user
+```
+
+**Root Cause**
+
+Expired password for SQL authentication.
+
+**Solution**
+
+Reset credentials.
+
+---
+
+### 9. Incident: Long blocking chains
+
+**Investigation**
+
+Used:
+
+```
+sys.dm_exec_requests
+```
+
+**Fix**
+
+Killed blocking session.
+
+---
+
+### 10. Incident: Geo-replication lag
+
+**Issue**
+
+Secondary DB was behind.
+
+**Cause**
+
+High write workload.
+
+**Solution**
+
+Scaled DB tier.
+
+---
+
+# 3️⃣ Advanced Production Troubleshooting (15)
+
+---
+
+# 1. Troubleshooting High CPU
+
+**Symptoms**
+
+CPU > 90%
+
+**Steps**
+
+1️⃣ Identify queries
+
+```
+SELECT TOP 10
+total_worker_time/execution_count
+FROM sys.dm_exec_query_stats
+```
+
+2️⃣ Optimize indexes
+
+3️⃣ Scale vCore.
+
+---
+
+# 2. Investigating Deadlocks
+
+**Use Extended Events**
+
+```
+system_health
+```
+
+View deadlock graphs in **Azure Portal**.
+
+---
+
+# 3. Query Performance Degradation
+
+**Use Query Store**
+
+```
+SELECT *
+FROM sys.query_store_query
+```
+
+Force good plan.
+
+---
+
+# 4. TempDB Contention
+
+Symptoms:
+
+```
+PAGEIOLATCH waits
+```
+
+Fix:
+
+* optimize temp tables
+* scale compute
+
+---
+
+# 5. High IO Latency
+
+Monitor:
+
+```
+IO percentage
+```
+
+Fix:
+
+Upgrade storage tier.
+
+---
+
+# 6. Connection Pool Exhaustion
+
+Error:
+
+```
+Timeout expired. Max pool reached
+```
+
+Fix:
+
+Increase pool size.
+
+---
+
+# 7. Azure SQL throttling
+
+Error code:
+
+```
+40501 - Service busy
+```
+
+Fix:
+
+* retry logic
+* scale database
+
+---
+
+# 8. Long running transactions
+
+Query:
+
+```
+DBCC OPENTRAN
+```
+
+Kill sessions.
+
+---
+
+# 9. Lock escalation
+
+Cause:
+
+Large table updates.
+
+Fix:
+
+Batch updates.
+
+Example:
+
+```
+UPDATE TOP (1000)
+```
+
+---
+
+# 10. Geo Failover Not Working
+
+Check:
+
+```
+Failover group status
+Replication lag
+```
+
+---
+
+# 11. Data sync failure
+
+Cause:
+
+Network issues.
+
+Fix:
+
+Restart sync agent.
+
+---
+
+# 12. Index fragmentation
+
+Check:
+
+```
+sys.dm_db_index_physical_stats
+```
+
+Fix:
+
+```
+ALTER INDEX REBUILD
+```
+
+---
+
+# 13. Azure SQL authentication latency
+
+Fix:
+
+Use **Managed Identity** instead of SQL login.
+
+---
+
+# 14. Transaction log growth
+
+Check:
+
+```
+sys.database_files
+```
+
+Fix:
+
+Frequent checkpoints.
+
+---
+
+# 15. Query timeout in microservices
+
+Root cause:
+
+Network + DB query delays.
+
+Fix:
+
+* caching
+* read replicas
+* query tuning
+
+---
+
+
+* **Index corruption**
+* **Failover group disaster recovery**
+* **AKS microservices DB bottlenecks**
+* **Cross-region DR failures**
+* **Query store regressions**
+* **SQL connection storms**
+
