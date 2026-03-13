@@ -1,0 +1,644 @@
+Below are **Azure DevOps (AZ) Interview Q&A for a DevOps Engineer with 6+ years experience** focusing on **intermediate concepts, real production incidents, and advanced troubleshooting**.
+
+---
+
+# 1️⃣ 10 Intermediate Azure DevOps Interview Q&A
+
+### 1. What is Azure DevOps?
+
+**Answer:**
+Azure DevOps is a cloud-based DevOps platform by Microsoft that provides tools for **CI/CD, source control, project management, testing, and artifact management**.
+
+Main services:
+
+* Azure Repos
+* Azure Pipelines
+* Azure Boards
+* Azure Artifacts
+* Azure Test Plans
+
+---
+
+### 2. What is Azure Pipeline?
+
+**Answer:**
+Azure Pipelines is a CI/CD service used to **build, test, and deploy applications automatically** across environments like Kubernetes, VMs, and cloud services.
+
+Pipeline types:
+
+* YAML Pipeline
+* Classic Pipeline
+
+---
+
+### 3. Difference between Classic Pipeline and YAML Pipeline?
+
+| Feature         | Classic  | YAML       |
+| --------------- | -------- | ---------- |
+| Configuration   | UI based | Code based |
+| Version control | No       | Yes        |
+| Recommended     | No       | Yes        |
+| Reusability     | Limited  | High       |
+
+YAML pipelines follow **Infrastructure as Code principles**.
+
+---
+
+### 4. What are Azure DevOps Agents?
+
+**Answer:**
+Agents are machines that **run pipeline jobs**.
+
+Types:
+
+* Microsoft Hosted Agent
+* Self Hosted Agent
+
+Example:
+
+```
+ubuntu-latest
+windows-latest
+```
+
+---
+
+### 5. What are Service Connections?
+
+**Answer:**
+Service Connections allow Azure DevOps pipelines to **connect with external services** like:
+
+* Azure Subscription
+* AWS
+* Kubernetes
+* Docker Registry
+
+Example:
+Pipeline deploys to **Azure Kubernetes Service** using a service connection.
+
+---
+
+### 6. What is Azure Repos?
+
+**Answer:**
+Azure Repos is a Git repository hosting service used for **source code management**.
+
+Supports:
+
+* Git repositories
+* Branch policies
+* Pull requests
+* Code review workflows
+
+---
+
+### 7. What are Variable Groups?
+
+**Answer:**
+Variable Groups store **shared variables across pipelines**.
+
+Example:
+
+```
+DB_USERNAME
+DB_PASSWORD
+ENV=prod
+```
+
+These are often integrated with **Azure Key Vault**.
+
+---
+
+### 8. What is Artifact in Azure DevOps?
+
+**Answer:**
+Artifacts are **build outputs stored and shared between pipeline stages**.
+
+Examples:
+
+* .jar
+* .zip
+* Docker image
+* npm packages
+
+Stored using:
+
+* Azure Artifacts
+* Pipeline artifacts
+
+---
+
+### 9. What are Environments in Azure DevOps?
+
+**Answer:**
+Environments represent **deployment targets**.
+
+Example:
+
+```
+Dev
+QA
+Stage
+Production
+```
+
+Features:
+
+* Deployment approvals
+* Monitoring
+* Deployment history
+
+---
+
+### 10. What is Multi-stage Pipeline?
+
+**Answer:**
+Multi-stage pipelines allow **CI + CD in one YAML file**.
+
+Example stages:
+
+```
+Build
+Test
+Security Scan
+Deploy Dev
+Deploy Prod
+```
+
+---
+
+# 2️⃣ 10 Real DevOps Production Incidents (Azure DevOps)
+
+---
+
+### Incident 1: Pipeline suddenly stopped triggering
+
+**Issue**
+
+CI pipeline stopped triggering after code push.
+
+**Root Cause**
+
+Branch policy was changed.
+
+**Fix**
+
+```
+Repos → Branch Policies → Build Validation
+```
+
+Re-enabled pipeline trigger.
+
+---
+
+### Incident 2: Pipeline failing due to agent shortage
+
+**Issue**
+
+Pipeline queued for **45 minutes**.
+
+**Root Cause**
+
+Microsoft hosted agents were exhausted.
+
+**Fix**
+
+Created **Self Hosted Agent Pool**
+
+```
+az pipelines agent create
+```
+
+---
+
+### Incident 3: Deployment failing with permission error
+
+**Error**
+
+```
+AuthorizationFailed
+```
+
+**Root Cause**
+
+Service connection lost RBAC permission.
+
+**Fix**
+
+Reassigned role:
+
+```
+Contributor
+```
+
+on resource group.
+
+---
+
+### Incident 4: Pipeline fails after secret rotation
+
+**Issue**
+
+Application deployment failing.
+
+**Root Cause**
+
+Azure Key Vault secret updated but pipeline variable not refreshed.
+
+**Fix**
+
+Re-linked variable group with **Key Vault**.
+
+---
+
+### Incident 5: Artifact not found in release stage
+
+**Error**
+
+```
+Artifact not available
+```
+
+**Root Cause**
+
+Artifact name mismatch between build and release pipeline.
+
+**Fix**
+
+Updated artifact reference.
+
+---
+
+### Incident 6: Docker build pipeline suddenly failing
+
+**Error**
+
+```
+Cannot connect to Docker daemon
+```
+
+**Root Cause**
+
+Agent image changed.
+
+**Fix**
+
+Updated YAML:
+
+```
+pool:
+  vmImage: ubuntu-latest
+```
+
+---
+
+### Incident 7: Slow pipelines
+
+**Root Cause**
+
+Large dependencies downloaded every run.
+
+**Fix**
+
+Enabled caching.
+
+Example:
+
+```
+Cache@2
+```
+
+---
+
+### Incident 8: PR validation failing randomly
+
+**Root Cause**
+
+Flaky tests.
+
+**Fix**
+
+Separated **unit tests and integration tests**.
+
+---
+
+### Incident 9: Terraform pipeline destroying resources
+
+**Root Cause**
+
+Wrong backend state file.
+
+**Fix**
+
+Configured remote backend properly.
+
+---
+
+### Incident 10: Pipeline YAML syntax failure
+
+**Root Cause**
+
+Indentation error in YAML.
+
+Example wrong:
+
+```
+steps
+- script: echo hello
+```
+
+Correct:
+
+```
+steps:
+- script: echo hello
+```
+
+---
+
+# 3️⃣ 15 Advanced Azure DevOps Production Troubleshooting Scenarios
+
+---
+
+# 1. Pipeline stuck in queued state
+
+### Symptoms
+
+Pipeline not starting.
+
+### Root Causes
+
+* Agent offline
+* Agent pool limit reached
+* Parallel job limit reached
+
+### Troubleshooting
+
+Check:
+
+```
+Organization Settings
+→ Parallel Jobs
+```
+
+Solution:
+
+* Increase parallel jobs
+* Add self hosted agents
+
+---
+
+# 2. Deployment succeeded but application not updated
+
+### Cause
+
+Pipeline deployed to wrong slot.
+
+Example:
+
+```
+production
+staging
+```
+
+### Fix
+
+Use slot swap.
+
+---
+
+# 3. Pipeline failing due to certificate expiration
+
+### Example
+
+Service connection used **expired certificate**.
+
+### Fix
+
+Rotate credentials in:
+
+```
+Project Settings
+→ Service Connections
+```
+
+---
+
+# 4. Git clone failing in pipeline
+
+Error:
+
+```
+fatal: repository not found
+```
+
+Root cause:
+
+Repo permission missing.
+
+Fix:
+
+Grant pipeline permission in **Azure Repos**.
+
+---
+
+# 5. Pipeline running extremely slow
+
+Root causes:
+
+* Cold agent
+* Dependency downloads
+* Container image pulls
+
+Fix:
+
+Use caching:
+
+```
+Cache@2
+```
+
+---
+
+# 6. Build works locally but fails in pipeline
+
+Cause:
+
+Environment mismatch.
+
+Example:
+
+Local:
+
+```
+Node 18
+```
+
+Pipeline:
+
+```
+Node 16
+```
+
+Fix:
+
+```
+NodeTool@0
+```
+
+---
+
+# 7. Kubernetes deployment failing from pipeline
+
+Example error:
+
+```
+kubectl: forbidden
+```
+
+Root cause:
+
+Service account missing RBAC.
+
+Fix:
+
+```
+ClusterRoleBinding
+```
+
+---
+
+# 8. Pipeline variables not accessible
+
+Cause:
+
+Variable marked as **secret**.
+
+Secret variables cannot be echoed.
+
+Fix:
+
+Use environment variables.
+
+---
+
+# 9. Terraform state lock error
+
+Error:
+
+```
+Error acquiring state lock
+```
+
+Root cause:
+
+Another pipeline running.
+
+Fix:
+
+```
+terraform force-unlock
+```
+
+---
+
+# 10. Deployment approval stuck
+
+Cause:
+
+Manual approval required.
+
+Fix:
+
+Approve in:
+
+```
+Pipelines → Environments → Approvals
+```
+
+---
+
+# 11. Artifact download failing
+
+Cause:
+
+Retention policy deleted artifacts.
+
+Fix:
+
+Increase retention policy.
+
+---
+
+# 12. Azure DevOps service outage
+
+Symptoms:
+
+Pipelines failing globally.
+
+Fix:
+
+Check:
+
+Azure DevOps Status page.
+
+---
+
+# 13. Container registry authentication failure
+
+Error:
+
+```
+unauthorized: authentication required
+```
+
+Fix:
+
+Reconfigure service connection.
+
+---
+
+# 14. YAML template pipeline failing
+
+Cause:
+
+Template path incorrect.
+
+Example wrong:
+
+```
+templates/build.yaml
+```
+
+Correct:
+
+```
+./templates/build.yaml
+```
+
+---
+
+# 15. Multi-stage pipeline skipping stage
+
+Cause:
+
+Condition set incorrectly.
+
+Example:
+
+```
+condition: succeeded()
+```
+
+Fix:
+
+Check stage dependency.
+
+---
+
+✅ If you want, I can also share:
+
+* **40 Advanced Azure DevOps Scenario-Based Interview Questions (Most Asked in MNCs)**
+* **Azure DevOps Production Outage Handbook (50 Real Failures + Fixes)**
+* **Azure DevOps YAML Pipeline Cheat Sheet for DevOps Engineers**
+* **Azure DevOps + Kubernetes + Terraform Real Production Scenarios**.
